@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      custom_brands: {
+        Row: {
+          created_at: string
+          display_order: number | null
+          id: string
+          logo_url: string | null
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      custom_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number | null
+          icon: string | null
+          id: string
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       inquiries: {
         Row: {
           created_at: string
@@ -63,6 +126,8 @@ export type Database = {
           brand: Database["public"]["Enums"]["brand"]
           category: Database["public"]["Enums"]["product_category"]
           created_at: string
+          custom_brand_id: string | null
+          custom_category_id: string | null
           description: string | null
           id: string
           image_url: string | null
@@ -77,6 +142,8 @@ export type Database = {
           brand: Database["public"]["Enums"]["brand"]
           category: Database["public"]["Enums"]["product_category"]
           created_at?: string
+          custom_brand_id?: string | null
+          custom_category_id?: string | null
           description?: string | null
           id?: string
           image_url?: string | null
@@ -91,6 +158,8 @@ export type Database = {
           brand?: Database["public"]["Enums"]["brand"]
           category?: Database["public"]["Enums"]["product_category"]
           created_at?: string
+          custom_brand_id?: string | null
+          custom_category_id?: string | null
           description?: string | null
           id?: string
           image_url?: string | null
@@ -101,7 +170,22 @@ export type Database = {
           specifications?: Json | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_custom_brand_id_fkey"
+            columns: ["custom_brand_id"]
+            isOneToOne: false
+            referencedRelation: "custom_brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_custom_category_id_fkey"
+            columns: ["custom_category_id"]
+            isOneToOne: false
+            referencedRelation: "custom_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -194,6 +278,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_exists: { Args: never; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -201,6 +286,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      initialize_first_admin: { Args: { user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "customer"
