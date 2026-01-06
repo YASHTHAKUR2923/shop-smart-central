@@ -18,13 +18,11 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useInquiries, useUpdateInquiryStatus } from '@/hooks/useInquiries';
-import { useGenerateQuotation } from '@/hooks/useQuotations';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { InquiryStatus } from '@/types/database';
-import { Loader2, Phone, Mail, MessageSquare, Package, FileText, CheckCircle } from 'lucide-react';
+import { Loader2, Phone, Mail, MessageSquare, Package } from 'lucide-react';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
 
 const STATUS_LABELS: Record<InquiryStatus, string> = {
   pending: 'Pending',
@@ -46,7 +44,6 @@ export default function AdminInquiries() {
   const { isAdmin, isLoading: authLoading } = useAuth();
   const { data: inquiries, isLoading } = useInquiries();
   const updateStatus = useUpdateInquiryStatus();
-  const generateQuotation = useGenerateQuotation();
 
   if (authLoading) {
     return null;
@@ -58,35 +55,6 @@ export default function AdminInquiries() {
 
   const handleStatusChange = async (inquiryId: string, status: InquiryStatus) => {
     await updateStatus.mutateAsync({ id: inquiryId, status });
-    
-    // Auto-generate quotation when status changes to 'completed'
-    if (status === 'completed') {
-      try {
-        await generateQuotation.mutateAsync(inquiryId);
-        toast.success('Deal confirmed! Quotation generated automatically.');
-      } catch (error) {
-        console.error('Error generating quotation:', error);
-      }
-    }
-  };
-
-  const handleGenerateQuotation = async (inquiryId: string) => {
-    try {
-      await generateQuotation.mutateAsync(inquiryId);
-      toast.success('Quotation generated successfully!');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to generate quotation');
-    }
-  };
-
-  const handleConfirmDeal = async (inquiryId: string) => {
-    try {
-      await updateStatus.mutateAsync({ id: inquiryId, status: 'completed' });
-      await generateQuotation.mutateAsync(inquiryId);
-      toast.success('Deal confirmed and quotation generated!');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to confirm deal');
-    }
   };
 
   return (
@@ -97,7 +65,7 @@ export default function AdminInquiries() {
             Customer Inquiries
           </h1>
           <p className="text-muted-foreground">
-            Manage and respond to customer inquiries. Confirm deals to auto-generate quotations.
+            Manage and respond to customer inquiries
           </p>
         </div>
 
@@ -159,53 +127,21 @@ export default function AdminInquiries() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex flex-col gap-2 items-end">
-                          <Select
-                            value={inquiry.status}
-                            onValueChange={(value: InquiryStatus) => handleStatusChange(inquiry.id, value)}
-                          >
-                            <SelectTrigger className="w-32">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {(Object.keys(STATUS_LABELS) as InquiryStatus[]).map((status) => (
-                                <SelectItem key={status} value={status}>
-                                  {STATUS_LABELS[status]}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          
-                          {inquiry.status !== 'completed' && inquiry.status !== 'cancelled' && (
-                            <Button 
-                              size="sm" 
-                              onClick={() => handleConfirmDeal(inquiry.id)}
-                              disabled={generateQuotation.isPending}
-                              className="bg-success hover:bg-success/90"
-                            >
-                              {generateQuotation.isPending ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                              ) : (
-                                <>
-                                  <CheckCircle className="w-4 h-4 mr-1" />
-                                  Confirm Deal
-                                </>
-                              )}
-                            </Button>
-                          )}
-                          
-                          {inquiry.status === 'quoted' && (
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => handleGenerateQuotation(inquiry.id)}
-                              disabled={generateQuotation.isPending}
-                            >
-                              <FileText className="w-4 h-4 mr-1" />
-                              Regenerate Quote
-                            </Button>
-                          )}
-                        </div>
+                        <Select
+                          value={inquiry.status}
+                          onValueChange={(value: InquiryStatus) => handleStatusChange(inquiry.id, value)}
+                        >
+                          <SelectTrigger className="w-32">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {(Object.keys(STATUS_LABELS) as InquiryStatus[]).map((status) => (
+                              <SelectItem key={status} value={status}>
+                                {STATUS_LABELS[status]}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -252,7 +188,7 @@ export default function AdminInquiries() {
                       </div>
                     )}
                     
-                    <div className="pt-3 border-t space-y-2">
+                    <div className="pt-3 border-t">
                       <Select
                         value={inquiry.status}
                         onValueChange={(value: InquiryStatus) => handleStatusChange(inquiry.id, value)}
@@ -268,23 +204,6 @@ export default function AdminInquiries() {
                           ))}
                         </SelectContent>
                       </Select>
-                      
-                      {inquiry.status !== 'completed' && inquiry.status !== 'cancelled' && (
-                        <Button 
-                          className="w-full bg-success hover:bg-success/90"
-                          onClick={() => handleConfirmDeal(inquiry.id)}
-                          disabled={generateQuotation.isPending}
-                        >
-                          {generateQuotation.isPending ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <>
-                              <CheckCircle className="w-4 h-4 mr-2" />
-                              Confirm Deal & Generate Quote
-                            </>
-                          )}
-                        </Button>
-                      )}
                     </div>
                   </CardContent>
                 </Card>

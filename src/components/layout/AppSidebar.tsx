@@ -24,26 +24,23 @@ import {
   Cable, 
   Package, 
   ChevronDown,
+  Settings,
   Phone,
   LogOut,
   LogIn,
-  LayoutDashboard,
-  FolderTree,
-  Users,
-  Loader2,
+  LayoutDashboard
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { useCategories, useBrands } from '@/hooks/useCategories';
+import { CATEGORY_LABELS, BRAND_LABELS, ProductCategory, Brand } from '@/types/database';
 import { cn } from '@/lib/utils';
 
-// Icon mapping for dynamic categories
-const iconMap: Record<string, React.ElementType> = {
-  Laptop: Laptop,
-  Monitor: Monitor,
-  Network: Network,
-  Server: Server,
-  Cable: Cable,
-  Package: Package,
+const categoryIcons: Record<ProductCategory, React.ElementType> = {
+  laptop: Laptop,
+  desktop: Monitor,
+  network_module: Network,
+  server: Server,
+  accessories: Cable,
+  other: Package,
 };
 
 export function AppSidebar() {
@@ -52,23 +49,20 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
   
-  const { data: categories, isLoading: categoriesLoading } = useCategories();
-  const { data: brands, isLoading: brandsLoading } = useBrands();
-  
-  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
+  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({
+    laptop: true,
+  });
 
-  const toggleCategory = (slug: string) => {
+  const toggleCategory = (category: string) => {
     setOpenCategories(prev => ({
       ...prev,
-      [slug]: !prev[slug],
+      [category]: !prev[category],
     }));
   };
 
   const isActive = (path: string) => location.pathname === path;
-  const isCategoryActive = (slug: string) => 
-    location.pathname.startsWith(`/products/${slug}`);
-
-  const isLoading = categoriesLoading || brandsLoading;
+  const isCategoryActive = (category: ProductCategory) => 
+    location.pathname.startsWith(`/products/${category}`);
 
   return (
     <Sidebar className="border-r border-sidebar-border">
@@ -130,65 +124,59 @@ export function AppSidebar() {
             {!collapsed && 'Products'}
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            {isLoading ? (
-              <div className="flex justify-center py-4">
-                <Loader2 className="w-5 h-5 animate-spin text-sidebar-foreground/50" />
-              </div>
-            ) : (
-              <SidebarMenu>
-                {categories?.map((category) => {
-                  const Icon = iconMap[category.icon || 'Package'] || Package;
-                  const isOpen = openCategories[category.slug];
-                  
-                  return (
-                    <SidebarMenuItem key={category.id}>
-                      <Collapsible open={isOpen} onOpenChange={() => toggleCategory(category.slug)}>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton
-                            className={cn(
-                              "flex items-center justify-between w-full px-3 py-2 rounded-lg transition-colors",
-                              isCategoryActive(category.slug) ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
-                            )}
-                          >
-                            <div className="flex items-center gap-3">
-                              <Icon className="w-5 h-5" />
-                              {!collapsed && <span>{category.name}</span>}
-                            </div>
-                            {!collapsed && (
-                              <ChevronDown className={cn(
-                                "w-4 h-4 transition-transform",
-                                isOpen && "rotate-180"
-                              )} />
-                            )}
-                          </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        
-                        {!collapsed && (
-                          <CollapsibleContent>
-                            <div className="ml-8 mt-1 space-y-1">
-                              {brands?.map((brand) => (
-                                <Link
-                                  key={brand.id}
-                                  to={`/products/${category.slug}/${brand.slug}`}
-                                  className={cn(
-                                    "block px-3 py-1.5 text-sm rounded-md transition-colors",
-                                    location.pathname === `/products/${category.slug}/${brand.slug}`
-                                      ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                                      : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
-                                  )}
-                                >
-                                  {brand.name}
-                                </Link>
-                              ))}
-                            </div>
-                          </CollapsibleContent>
-                        )}
-                      </Collapsible>
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            )}
+            <SidebarMenu>
+              {(Object.keys(CATEGORY_LABELS) as ProductCategory[]).map((category) => {
+                const Icon = categoryIcons[category];
+                const isOpen = openCategories[category];
+                
+                return (
+                  <SidebarMenuItem key={category}>
+                    <Collapsible open={isOpen} onOpenChange={() => toggleCategory(category)}>
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton
+                          className={cn(
+                            "flex items-center justify-between w-full px-3 py-2 rounded-lg transition-colors",
+                            isCategoryActive(category) ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
+                          )}
+                        >
+                          <div className="flex items-center gap-3">
+                            <Icon className="w-5 h-5" />
+                            {!collapsed && <span>{CATEGORY_LABELS[category]}</span>}
+                          </div>
+                          {!collapsed && (
+                            <ChevronDown className={cn(
+                              "w-4 h-4 transition-transform",
+                              isOpen && "rotate-180"
+                            )} />
+                          )}
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
+                      
+                      {!collapsed && (
+                        <CollapsibleContent>
+                          <div className="ml-8 mt-1 space-y-1">
+                            {(Object.keys(BRAND_LABELS) as Brand[]).map((brand) => (
+                              <Link
+                                key={brand}
+                                to={`/products/${category}/${brand}`}
+                                className={cn(
+                                  "block px-3 py-1.5 text-sm rounded-md transition-colors",
+                                  location.pathname === `/products/${category}/${brand}`
+                                    ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                                    : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
+                                )}
+                              >
+                                {BRAND_LABELS[brand]}
+                              </Link>
+                            ))}
+                          </div>
+                        </CollapsibleContent>
+                      )}
+                    </Collapsible>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
@@ -223,21 +211,7 @@ export function AppSidebar() {
                       )}
                     >
                       <Package className="w-5 h-5" />
-                      {!collapsed && <span>Products</span>}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <Link 
-                      to="/admin/categories" 
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
-                        isActive('/admin/categories') ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
-                      )}
-                    >
-                      <FolderTree className="w-5 h-5" />
-                      {!collapsed && <span>Categories</span>}
+                      {!collapsed && <span>Manage Products</span>}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -252,20 +226,6 @@ export function AppSidebar() {
                     >
                       <Phone className="w-5 h-5" />
                       {!collapsed && <span>Inquiries</span>}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <Link 
-                      to="/admin/users" 
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
-                        isActive('/admin/users') ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
-                      )}
-                    >
-                      <Users className="w-5 h-5" />
-                      {!collapsed && <span>Users</span>}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
