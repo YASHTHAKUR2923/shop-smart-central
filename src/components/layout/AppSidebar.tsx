@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useCategories, useBrands } from '@/hooks/useCategories';
+import { useAllCategoryBrands } from '@/hooks/useCategoryBrands';
 import { cn } from '@/lib/utils';
 
 // Icon mapping for dynamic categories
@@ -54,6 +55,7 @@ export function AppSidebar() {
   
   const { data: categories, isLoading: categoriesLoading } = useCategories();
   const { data: brands, isLoading: brandsLoading } = useBrands();
+  const { data: categoryBrands, isLoading: categoryBrandsLoading } = useAllCategoryBrands();
   
   const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
 
@@ -64,11 +66,20 @@ export function AppSidebar() {
     }));
   };
 
+  // Get brands for a specific category
+  const getBrandsForCategory = (categoryId: string) => {
+    if (!categoryBrands || !brands) return [];
+    const brandIds = categoryBrands
+      .filter(cb => cb.category_id === categoryId)
+      .map(cb => cb.brand_id);
+    return brands.filter(b => brandIds.includes(b.id));
+  };
+
   const isActive = (path: string) => location.pathname === path;
   const isCategoryActive = (slug: string) => 
     location.pathname.startsWith(`/products/${slug}`);
 
-  const isLoading = categoriesLoading || brandsLoading;
+  const isLoading = categoriesLoading || brandsLoading || categoryBrandsLoading;
 
   return (
     <Sidebar className="border-r border-sidebar-border">
@@ -166,7 +177,7 @@ export function AppSidebar() {
                         {!collapsed && (
                           <CollapsibleContent>
                             <div className="ml-8 mt-1 space-y-1">
-                              {brands?.map((brand) => (
+                              {getBrandsForCategory(category.id).map((brand) => (
                                 <Link
                                   key={brand.id}
                                   to={`/products/${category.slug}/${brand.slug}`}
@@ -180,6 +191,11 @@ export function AppSidebar() {
                                   {brand.name}
                                 </Link>
                               ))}
+                              {getBrandsForCategory(category.id).length === 0 && (
+                                <span className="block px-3 py-1.5 text-sm text-sidebar-foreground/50">
+                                  No brands
+                                </span>
+                              )}
                             </div>
                           </CollapsibleContent>
                         )}

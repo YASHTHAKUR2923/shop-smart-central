@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -26,6 +27,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { 
   useCategories, 
   useBrands, 
@@ -38,9 +40,10 @@ import {
   CustomCategory,
   CustomBrand,
 } from '@/hooks/useCategories';
+import { useAllCategoryBrands, useSetCategoryBrands } from '@/hooks/useCategoryBrands';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
-import { Plus, Pencil, Trash2, Loader2, FolderTree, Tag } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, FolderTree, Tag, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface CategoryFormData {
@@ -49,6 +52,7 @@ interface CategoryFormData {
   icon: string;
   description: string;
   display_order: number;
+  selectedBrands: string[];
 }
 
 interface BrandFormData {
@@ -64,6 +68,7 @@ const defaultCategoryForm: CategoryFormData = {
   icon: 'Package',
   description: '',
   display_order: 0,
+  selectedBrands: [],
 };
 
 const defaultBrandForm: BrandFormData = {
@@ -77,6 +82,7 @@ export default function AdminCategories() {
   const { isAdmin, isLoading: authLoading } = useAuth();
   const { data: categories, isLoading: categoriesLoading } = useCategories();
   const { data: brands, isLoading: brandsLoading } = useBrands();
+  const { data: categoryBrands, isLoading: categoryBrandsLoading } = useAllCategoryBrands();
   
   const createCategory = useCreateCategory();
   const updateCategory = useUpdateCategory();
@@ -84,6 +90,7 @@ export default function AdminCategories() {
   const createBrand = useCreateBrand();
   const updateBrand = useUpdateBrand();
   const deleteBrand = useDeleteBrand();
+  const setCategoryBrands = useSetCategoryBrands();
 
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [brandDialogOpen, setBrandDialogOpen] = useState(false);
@@ -97,6 +104,14 @@ export default function AdminCategories() {
 
   const generateSlug = (name: string) => {
     return name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  };
+
+  // Get brands for a specific category
+  const getBrandsForCategory = (categoryId: string) => {
+    if (!categoryBrands) return [];
+    return categoryBrands
+      .filter(cb => cb.category_id === categoryId)
+      .map(cb => cb.brand_id);
   };
 
   // Category handlers
@@ -114,6 +129,7 @@ export default function AdminCategories() {
       icon: category.icon || 'Package',
       description: category.description || '',
       display_order: category.display_order,
+      selectedBrands: getBrandsForCategory(category.id),
     });
     setCategoryDialogOpen(true);
   };
@@ -121,13 +137,37 @@ export default function AdminCategories() {
   const handleCategorySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      let categoryId: string;
+      
       if (editingCategory) {
-        await updateCategory.mutateAsync({ id: editingCategory.id, ...categoryForm });
+        await updateCategory.mutateAsync({ 
+          id: editingCategory.id, 
+          name: categoryForm.name,
+          slug: categoryForm.slug,
+          icon: categoryForm.icon,
+          description: categoryForm.description,
+          display_order: categoryForm.display_order,
+        });
+        categoryId = editingCategory.id;
         toast.success('Category updated');
       } else {
-        await createCategory.mutateAsync(categoryForm);
+        const result = await createCategory.mutateAsync({
+          name: categoryForm.name,
+          slug: categoryForm.slug,
+          icon: categoryForm.icon,
+          description: categoryForm.description,
+          display_order: categoryForm.display_order,
+        });
+        categoryId = result.id;
         toast.success('Category created');
       }
+      
+      // Update brand associations
+      await setCategoryBrands.mutateAsync({
+        categoryId,
+        brandIds: categoryForm.selectedBrands,
+      });
+      
       setCategoryDialogOpen(false);
       setCategoryForm(defaultCategoryForm);
     } catch (error: any) {
@@ -144,6 +184,15 @@ export default function AdminCategories() {
         toast.error(error.message || 'Error deleting category');
       }
     }
+  };
+
+  const handleBrandToggle = (brandId: string) => {
+    setCategoryForm(prev => ({
+      ...prev,
+      selectedBrands: prev.selectedBrands.includes(brandId)
+        ? prev.selectedBrands.filter(id => id !== brandId)
+        : [...prev.selectedBrands, brandId],
+    }));
   };
 
   // Brand handlers
@@ -192,7 +241,16 @@ export default function AdminCategories() {
     }
   };
 
-  const isLoading = categoriesLoading || brandsLoading;
+  // Get brand names for display
+  const getBrandNamesForCategory = (categoryId: string) => {
+    if (!categoryBrands || !brands) return [];
+    const brandIds = getBrandsForCategory(categoryId);
+    return brands
+      .filter(b => brandIds.includes(b.id))
+      .map(b => b.name);
+  };
+
+  const isLoading = categoriesLoading || brandsLoading || categoryBrandsLoading;
 
   return (
     <MainLayout>
@@ -202,7 +260,7 @@ export default function AdminCategories() {
             Manage Categories & Brands
           </h1>
           <p className="text-muted-foreground">
-            Add, edit, or remove product categories and brands
+            Add, edit, or remove product categories and brands. Each category can have its own set of brands.
           </p>
         </div>
 
@@ -228,10 +286,10 @@ export default function AdminCategories() {
                     Add Category
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>{editingCategory ? 'Edit Category' : 'Add Category'}</DialogTitle>
-                    <DialogDescription>Enter the category details</DialogDescription>
+                    <DialogDescription>Enter the category details and select applicable brands</DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleCategorySubmit} className="space-y-4">
                     <div className="space-y-2">
@@ -285,12 +343,51 @@ export default function AdminCategories() {
                         onChange={(e) => setCategoryForm(prev => ({ ...prev, display_order: parseInt(e.target.value) || 0 }))}
                       />
                     </div>
+                    
+                    {/* Brand Selection */}
+                    <div className="space-y-3">
+                      <Label className="flex items-center gap-2">
+                        <Link2 className="w-4 h-4" />
+                        Applicable Brands
+                      </Label>
+                      <p className="text-sm text-muted-foreground">
+                        Select which brands are available for this category
+                      </p>
+                      <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 border rounded-lg">
+                        {brands && brands.length > 0 ? (
+                          brands.map((brand) => (
+                            <div key={brand.id} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`brand-${brand.id}`}
+                                checked={categoryForm.selectedBrands.includes(brand.id)}
+                                onCheckedChange={() => handleBrandToggle(brand.id)}
+                              />
+                              <label
+                                htmlFor={`brand-${brand.id}`}
+                                className="text-sm font-medium leading-none cursor-pointer"
+                              >
+                                {brand.name}
+                              </label>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-sm text-muted-foreground col-span-2">
+                            No brands available. Create brands first.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    
                     <div className="flex gap-3 pt-4">
                       <Button type="button" variant="outline" onClick={() => setCategoryDialogOpen(false)} className="flex-1">
                         Cancel
                       </Button>
-                      <Button type="submit" className="flex-1" disabled={createCategory.isPending || updateCategory.isPending}>
-                        {(createCategory.isPending || updateCategory.isPending) ? (
+                      <Button 
+                        type="submit" 
+                        className="flex-1" 
+                        disabled={createCategory.isPending || updateCategory.isPending || setCategoryBrands.isPending}
+                      >
+                        {(createCategory.isPending || updateCategory.isPending || setCategoryBrands.isPending) ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
                         ) : editingCategory ? 'Update' : 'Create'}
                       </Button>
@@ -311,30 +408,50 @@ export default function AdminCategories() {
                     <TableRow>
                       <TableHead>Name</TableHead>
                       <TableHead>Slug</TableHead>
-                      <TableHead>Icon</TableHead>
+                      <TableHead>Brands</TableHead>
                       <TableHead>Order</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {categories?.map((category) => (
-                      <TableRow key={category.id}>
-                        <TableCell className="font-medium">{category.name}</TableCell>
-                        <TableCell className="text-muted-foreground">{category.slug}</TableCell>
-                        <TableCell>{category.icon}</TableCell>
-                        <TableCell>{category.display_order}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button variant="ghost" size="icon" onClick={() => handleOpenCategoryEdit(category)}>
-                              <Pencil className="w-4 h-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" onClick={() => handleCategoryDelete(category.id)}>
-                              <Trash2 className="w-4 h-4 text-destructive" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {categories?.map((category) => {
+                      const brandNames = getBrandNamesForCategory(category.id);
+                      return (
+                        <TableRow key={category.id}>
+                          <TableCell className="font-medium">{category.name}</TableCell>
+                          <TableCell className="text-muted-foreground">{category.slug}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1">
+                              {brandNames.length > 0 ? (
+                                brandNames.slice(0, 3).map((name, idx) => (
+                                  <Badge key={idx} variant="secondary" className="text-xs">
+                                    {name}
+                                  </Badge>
+                                ))
+                              ) : (
+                                <span className="text-sm text-muted-foreground">No brands</span>
+                              )}
+                              {brandNames.length > 3 && (
+                                <Badge variant="outline" className="text-xs">
+                                  +{brandNames.length - 3} more
+                                </Badge>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>{category.display_order}</TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button variant="ghost" size="icon" onClick={() => handleOpenCategoryEdit(category)}>
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                              <Button variant="ghost" size="icon" onClick={() => handleCategoryDelete(category.id)}>
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </div>

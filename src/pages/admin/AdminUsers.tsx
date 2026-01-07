@@ -119,7 +119,8 @@ export default function AdminUsers() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>User ID</TableHead>
+                  <TableHead>User</TableHead>
+                  <TableHead>Email</TableHead>
                   <TableHead>Current Role</TableHead>
                   <TableHead className="text-right">Change Role</TableHead>
                 </TableRow>
@@ -127,11 +128,18 @@ export default function AdminUsers() {
               <TableBody>
                 {userRoles.map((userRole) => (
                   <TableRow key={userRole.id}>
-                    <TableCell className="font-mono text-sm">
-                      {userRole.user_id}
-                      {userRole.user_id === user?.id && (
-                        <Badge variant="outline" className="ml-2 text-xs">You</Badge>
-                      )}
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-medium">
+                          {userRole.full_name || 'No name set'}
+                        </span>
+                        {userRole.user_id === user?.id && (
+                          <Badge variant="outline" className="w-fit mt-1 text-xs">You</Badge>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {userRole.email || 'Unknown'}
                     </TableCell>
                     <TableCell>
                       <Badge className={ROLE_COLORS[userRole.role]}>
