@@ -7,27 +7,18 @@ export interface UserWithRole {
   user_id: string;
   role: AppRole;
   email?: string;
-  full_name?: string;
 }
 
 export function useUserRoles() {
   return useQuery({
     queryKey: ['user-roles'],
     queryFn: async () => {
-      // Use the secure function that returns user info for admins
-      const { data, error } = await supabase.rpc('get_users_with_roles');
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('*')
+        .order('role', { ascending: true });
       
-      if (error) {
-        // Fallback to basic query if function fails (e.g., not admin)
-        const { data: basicData, error: basicError } = await supabase
-          .from('user_roles')
-          .select('*')
-          .order('role', { ascending: true });
-        
-        if (basicError) throw basicError;
-        return basicData as UserWithRole[];
-      }
-      
+      if (error) throw error;
       return data as UserWithRole[];
     },
   });

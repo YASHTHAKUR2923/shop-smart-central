@@ -14,42 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      category_brands: {
-        Row: {
-          brand_id: string
-          category_id: string
-          created_at: string
-          id: string
-        }
-        Insert: {
-          brand_id: string
-          category_id: string
-          created_at?: string
-          id?: string
-        }
-        Update: {
-          brand_id?: string
-          category_id?: string
-          created_at?: string
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "category_brands_brand_id_fkey"
-            columns: ["brand_id"]
-            isOneToOne: false
-            referencedRelation: "custom_brands"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "category_brands_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "custom_categories"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       custom_brands: {
         Row: {
           created_at: string
@@ -293,22 +257,16 @@ export type Database = {
       }
       user_roles: {
         Row: {
-          email: string | null
-          full_name: string | null
           id: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Insert: {
-          email?: string | null
-          full_name?: string | null
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Update: {
-          email?: string | null
-          full_name?: string | null
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
@@ -321,16 +279,6 @@ export type Database = {
     }
     Functions: {
       admin_exists: { Args: never; Returns: boolean }
-      get_users_with_roles: {
-        Args: never
-        Returns: {
-          email: string
-          full_name: string
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }[]
-      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
