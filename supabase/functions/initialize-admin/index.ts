@@ -56,7 +56,7 @@ Deno.serve(async (req) => {
     }
 
     // Initialize the user as admin using admin client
-    const { data, error } = await supabaseAdmin.rpc('initialize_first_admin', { user_id: user.id })
+    const { data, error } = await supabaseAdmin.rpc('initialize_first_admin', { p_user_id: user.id })
 
     if (error) {
       console.error('Error initializing admin:', error)
