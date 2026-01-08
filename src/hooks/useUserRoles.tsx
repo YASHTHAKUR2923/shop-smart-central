@@ -6,7 +6,8 @@ export interface UserWithRole {
   id: string;
   user_id: string;
   role: AppRole;
-  email?: string;
+  email?: string | null;
+  full_name?: string | null;
 }
 
 export function useUserRoles() {
