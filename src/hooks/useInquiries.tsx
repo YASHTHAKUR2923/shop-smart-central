@@ -32,14 +32,15 @@ export function useCreateInquiry() {
       product_id?: string;
       message?: string;
     }) => {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('inquiries')
-        .insert(inquiry)
-        .select()
-        .single();
+        // IMPORTANT: don't request the inserted row back.
+        // Returning representation would require SELECT RLS permissions,
+        // which we intentionally keep admin-only for PII.
+        .insert([inquiry]);
       
       if (error) throw error;
-      return data;
+      return null;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inquiries'] });
