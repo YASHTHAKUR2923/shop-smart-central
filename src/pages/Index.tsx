@@ -68,7 +68,7 @@ export default function Index() {
                 className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
               >
                 <Link to="/contact">
-                  <Phone className="mr-2 w-5 h-5" />
+                  <Phone className="w-5 h-5" />
                   Contact Us
                 </Link>
               </Button>
