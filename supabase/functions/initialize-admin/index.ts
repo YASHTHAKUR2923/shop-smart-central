@@ -15,11 +15,11 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     
-    const supabase = createClient(supabaseUrl, supabaseServiceKey)
+    // Create admin client for database operations
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Check if any admin exists
-    const { data: adminCheck } = await supabase
-      .rpc('admin_exists')
+    // Check if any admin exists first
+    const { data: adminCheck } = await supabaseAdmin.rpc('admin_exists')
 
     if (adminCheck === true) {
       return new Response(
@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Get user from auth header
+    // Get user from auth header using anon key client
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
       return new Response(
@@ -37,19 +37,26 @@ Deno.serve(async (req) => {
       )
     }
 
-    const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token)
+    // Create a client with the user's token to get user info
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: { Authorization: authHeader }
+      }
+    })
+
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser()
 
     if (userError || !user) {
+      console.error('Auth error:', userError)
       return new Response(
-        JSON.stringify({ success: false, error: 'Invalid token' }),
+        JSON.stringify({ success: false, error: 'Invalid token or user not found' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
       )
     }
 
-    // Initialize the user as admin
-    const { data, error } = await supabase
-      .rpc('initialize_first_admin', { user_id: user.id })
+    // Initialize the user as admin using admin client
+    const { data, error } = await supabaseAdmin.rpc('initialize_first_admin', { user_id: user.id })
 
     if (error) {
       console.error('Error initializing admin:', error)
