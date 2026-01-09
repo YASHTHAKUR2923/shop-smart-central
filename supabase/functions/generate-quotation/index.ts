@@ -8,7 +8,7 @@ const corsHeaders = {
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders }) 
   }
 
   try {
@@ -82,11 +82,12 @@ Deno.serve(async (req) => {
     }
 
     // Update inquiry status to 'quoted'
-    await supabase
-      .from('inquiries')
-      .update({ status: 'quoted' })
-      .eq('id', inquiry_id)
-
+    if (inquiry.status !== 'completed') {
+      await supabase
+        .from('inquiries')
+        .update({ status: 'quoted' })
+        .eq('id', inquiry_id)
+    }
     console.log('Quotation generated successfully:', quotation.id)
     
     return new Response(

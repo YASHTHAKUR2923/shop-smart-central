@@ -65,9 +65,9 @@ export default function Index() {
                 asChild 
                 size="lg" 
                 variant="outline" 
-                className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+                className="border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground bg-transparent backdrop-blur-sm"
               >
-                <Link to="/contact">
+                <Link to="/contact" className="flex items-center gap-2">
                   <Phone className="w-5 h-5" />
                   Contact Us
                 </Link>

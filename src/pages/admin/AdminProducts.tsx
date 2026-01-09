@@ -29,6 +29,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct } from '@/hooks/useProducts';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
@@ -148,10 +149,12 @@ export default function AdminProducts() {
 
   const isSubmitting = createProduct.isPending || updateProduct.isPending;
 
+  // ... existing code ...
+
   return (
     <MainLayout>
       <div className="container py-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <h1 className="font-display text-3xl font-bold text-foreground mb-2">
               Manage Products
@@ -163,7 +166,7 @@ export default function AdminProducts() {
 
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={handleOpenCreate} className="bg-accent hover:bg-accent/90">
+              <Button onClick={handleOpenCreate} className="bg-accent hover:bg-accent/90 w-full sm:w-auto">
                 <Plus className="w-4 h-4 mr-2" />
                 Add Product
               </Button>
@@ -190,7 +193,7 @@ export default function AdminProducts() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="category">Category *</Label>
                     <Select
@@ -241,7 +244,7 @@ export default function AdminProducts() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="price">Price (₹)</Label>
                     <Input
@@ -254,13 +257,13 @@ export default function AdminProducts() {
                   </div>
 
                   <div className="space-y-2 flex items-end">
-                    <div className="flex items-center gap-2 pb-2">
+                    <div className="flex items-center gap-2 pb-2 w-full">
                       <Switch
                         id="show_price"
                         checked={formData.show_price}
                         onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_price: checked }))}
                       />
-                      <Label htmlFor="show_price">Show price publicly</Label>
+                      <Label htmlFor="show_price" className="text-sm">Show price publicly</Label>
                     </div>
                   </div>
                 </div>
@@ -285,7 +288,7 @@ export default function AdminProducts() {
                   <Label htmlFor="in_stock">In Stock</Label>
                 </div>
 
-                <div className="flex gap-3 pt-4">
+                <div className="flex flex-col sm:flex-row gap-3 pt-4">
                   <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} className="flex-1">
                     Cancel
                   </Button>
@@ -311,74 +314,151 @@ export default function AdminProducts() {
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         ) : products && products.length > 0 ? (
-          <div className="border rounded-lg overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Product</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Brand</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {products.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        {product.image_url ? (
-                          <img
-                            src={product.image_url}
-                            alt={product.name}
-                            className="w-12 h-12 rounded-lg object-cover"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center">
-                            <Package className="w-6 h-6 text-muted-foreground" />
-                          </div>
-                        )}
-                        <span className="font-medium">{product.name}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>{CATEGORY_LABELS[product.category]}</TableCell>
-                    <TableCell>{BRAND_LABELS[product.brand]}</TableCell>
-                    <TableCell>
-                      {product.show_price && product.price
-                        ? formatPrice(product.price)
-                        : <span className="text-muted-foreground">Hidden</span>
-                      }
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={product.in_stock ? 'default' : 'destructive'}>
-                        {product.in_stock ? 'In Stock' : 'Out of Stock'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleOpenEdit(product)}
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDelete(product.id)}
-                          disabled={deleteProduct.isPending}
-                        >
-                          <Trash2 className="w-4 h-4 text-destructive" />
-                        </Button>
-                      </div>
-                    </TableCell>
+          <>
+            {/* Desktop Table */}
+            <div className="hidden lg:block border rounded-lg overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Product</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Brand</TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {products.map((product) => (
+                    <TableRow key={product.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          {product.image_url ? (
+                            <img
+                              src={product.image_url}
+                              alt={product.name}
+                              className="w-12 h-12 rounded-lg object-cover"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center">
+                              <Package className="w-6 h-6 text-muted-foreground" />
+                            </div>
+                          )}
+                          <span className="font-medium">{product.name}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>{CATEGORY_LABELS[product.category]}</TableCell>
+                      <TableCell>{BRAND_LABELS[product.brand]}</TableCell>
+                      <TableCell>
+                        {product.show_price && product.price
+                          ? formatPrice(product.price)
+                          : <span className="text-muted-foreground">Hidden</span>
+                        }
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={product.in_stock ? 'default' : 'destructive'}>
+                          {product.in_stock ? 'In Stock' : 'Out of Stock'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleOpenEdit(product)}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(product.id)}
+                            disabled={deleteProduct.isPending}
+                          >
+                            <Trash2 className="w-4 h-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="lg:hidden space-y-4">
+              {products.map((product) => (
+                <Card key={product.id} className="border-border/50">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-4 mb-4">
+                      {product.image_url ? (
+                        <img
+                          src={product.image_url}
+                          alt={product.name}
+                          className="w-16 h-16 rounded-lg object-cover shrink-0"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                          <Package className="w-8 h-8 text-muted-foreground" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-foreground mb-1 break-words">{product.name}</h3>
+                        <div className="flex flex-wrap gap-2 mb-2">
+                          <Badge variant="outline" className="text-xs">
+                            {CATEGORY_LABELS[product.category]}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            {BRAND_LABELS[product.brand]}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+                      <div>
+                        <p className="text-muted-foreground text-xs mb-1">Price</p>
+                        <p className="font-medium">
+                          {product.show_price && product.price
+                            ? formatPrice(product.price)
+                            : <span className="text-muted-foreground">Hidden</span>
+                          }
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground text-xs mb-1">Status</p>
+                        <Badge variant={product.in_stock ? 'default' : 'destructive'} className="text-xs">
+                          {product.in_stock ? 'In Stock' : 'Out of Stock'}
+                        </Badge>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 pt-3 border-t">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => handleOpenEdit(product)}
+                      >
+                        <Pencil className="w-4 h-4 mr-2" />
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 text-destructive hover:text-destructive"
+                        onClick={() => handleDelete(product.id)}
+                        disabled={deleteProduct.isPending}
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </>
         ) : (
           <div className="text-center py-16">
             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">

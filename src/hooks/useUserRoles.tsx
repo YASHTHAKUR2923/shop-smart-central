@@ -15,9 +15,7 @@ export function useUserRoles() {
     queryKey: ['user-roles'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('user_roles')
-        .select('*')
-        .order('role', { ascending: true });
+        .rpc('get_user_roles_with_details');
       
       if (error) throw error;
       return data as UserWithRole[];

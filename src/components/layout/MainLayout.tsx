@@ -24,10 +24,10 @@ export function MainLayout({ children }: MainLayoutProps) {
             
             {/* Logo/Brand - visible when sidebar is collapsed */}
             <Link to="/" className="flex items-center gap-2 mr-4">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center lg:hidden">
+              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <span className="font-display font-bold text-primary-foreground text-sm">PH</span>
               </div>
-              <span className="font-display font-semibold text-foreground hidden sm:block lg:hidden">
+              <span className="font-display font-semibold text-foreground hidden sm:block">
                 Paras Hardwares
               </span>
             </Link>

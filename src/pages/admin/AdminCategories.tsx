@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -194,6 +195,8 @@ export default function AdminCategories() {
 
   const isLoading = categoriesLoading || brandsLoading;
 
+
+
   return (
     <MainLayout>
       <div className="container py-8">
@@ -207,12 +210,13 @@ export default function AdminCategories() {
         </div>
 
         <Tabs defaultValue="categories" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="categories" className="gap-2">
+          <TabsList className="w-full sm:w-auto">
+            <TabsTrigger value="categories" className="gap-2 flex-1 sm:flex-initial">
               <FolderTree className="w-4 h-4" />
-              Categories
+              <span className="hidden sm:inline">Categories</span>
+              <span className="sm:hidden">Cats</span>
             </TabsTrigger>
-            <TabsTrigger value="brands" className="gap-2">
+            <TabsTrigger value="brands" className="gap-2 flex-1 sm:flex-initial">
               <Tag className="w-4 h-4" />
               Brands
             </TabsTrigger>
@@ -223,12 +227,12 @@ export default function AdminCategories() {
             <div className="flex justify-end mb-4">
               <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button onClick={handleOpenCategoryCreate} className="bg-accent hover:bg-accent/90">
+                  <Button onClick={handleOpenCategoryCreate} className="bg-accent hover:bg-accent/90 w-full sm:w-auto">
                     <Plus className="w-4 h-4 mr-2" />
                     Add Category
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>{editingCategory ? 'Edit Category' : 'Add Category'}</DialogTitle>
                     <DialogDescription>Enter the category details</DialogDescription>
@@ -285,13 +289,16 @@ export default function AdminCategories() {
                         onChange={(e) => setCategoryForm(prev => ({ ...prev, display_order: parseInt(e.target.value) || 0 }))}
                       />
                     </div>
-                    <div className="flex gap-3 pt-4">
+                    <div className="flex flex-col sm:flex-row gap-3 pt-4">
                       <Button type="button" variant="outline" onClick={() => setCategoryDialogOpen(false)} className="flex-1">
                         Cancel
                       </Button>
                       <Button type="submit" className="flex-1" disabled={createCategory.isPending || updateCategory.isPending}>
                         {(createCategory.isPending || updateCategory.isPending) ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Saving...
+                          </>
                         ) : editingCategory ? 'Update' : 'Create'}
                       </Button>
                     </div>
@@ -305,26 +312,53 @@ export default function AdminCategories() {
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
               </div>
             ) : (
-              <div className="border rounded-lg overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Slug</TableHead>
-                      <TableHead>Icon</TableHead>
-                      <TableHead>Order</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {categories?.map((category) => (
-                      <TableRow key={category.id}>
-                        <TableCell className="font-medium">{category.name}</TableCell>
-                        <TableCell className="text-muted-foreground">{category.slug}</TableCell>
-                        <TableCell>{category.icon}</TableCell>
-                        <TableCell>{category.display_order}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
+              <>
+                {/* Desktop Table */}
+                <div className="hidden lg:block border rounded-lg overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Slug</TableHead>
+                        <TableHead>Icon</TableHead>
+                        <TableHead>Order</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {categories?.map((category) => (
+                        <TableRow key={category.id}>
+                          <TableCell className="font-medium">{category.name}</TableCell>
+                          <TableCell className="text-muted-foreground">{category.slug}</TableCell>
+                          <TableCell>{category.icon}</TableCell>
+                          <TableCell>{category.display_order}</TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button variant="ghost" size="icon" onClick={() => handleOpenCategoryEdit(category)}>
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                              <Button variant="ghost" size="icon" onClick={() => handleCategoryDelete(category.id)}>
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="lg:hidden space-y-4">
+                  {categories?.map((category) => (
+                    <Card key={category.id} className="border-border/50">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-foreground mb-1 break-words">{category.name}</h3>
+                            <p className="text-sm text-muted-foreground break-all">{category.slug}</p>
+                          </div>
+                          <div className="flex gap-2 shrink-0 ml-2">
                             <Button variant="ghost" size="icon" onClick={() => handleOpenCategoryEdit(category)}>
                               <Pencil className="w-4 h-4" />
                             </Button>
@@ -332,12 +366,27 @@ export default function AdminCategories() {
                               <Trash2 className="w-4 h-4 text-destructive" />
                             </Button>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 text-sm pt-3 border-t">
+                          <div>
+                            <p className="text-muted-foreground text-xs mb-1">Icon</p>
+                            <p className="font-medium">{category.icon || 'N/A'}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground text-xs mb-1">Order</p>
+                            <p className="font-medium">{category.display_order}</p>
+                          </div>
+                        </div>
+                        {category.description && (
+                          <div className="mt-3 pt-3 border-t">
+                            <p className="text-sm text-muted-foreground break-words">{category.description}</p>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </>
             )}
           </TabsContent>
 
@@ -346,12 +395,12 @@ export default function AdminCategories() {
             <div className="flex justify-end mb-4">
               <Dialog open={brandDialogOpen} onOpenChange={setBrandDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button onClick={handleOpenBrandCreate} className="bg-accent hover:bg-accent/90">
+                  <Button onClick={handleOpenBrandCreate} className="bg-accent hover:bg-accent/90 w-full sm:w-auto">
                     <Plus className="w-4 h-4 mr-2" />
                     Add Brand
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>{editingBrand ? 'Edit Brand' : 'Add Brand'}</DialogTitle>
                     <DialogDescription>Enter the brand details</DialogDescription>
@@ -401,13 +450,16 @@ export default function AdminCategories() {
                         onChange={(e) => setBrandForm(prev => ({ ...prev, display_order: parseInt(e.target.value) || 0 }))}
                       />
                     </div>
-                    <div className="flex gap-3 pt-4">
+                    <div className="flex flex-col sm:flex-row gap-3 pt-4">
                       <Button type="button" variant="outline" onClick={() => setBrandDialogOpen(false)} className="flex-1">
                         Cancel
                       </Button>
                       <Button type="submit" className="flex-1" disabled={createBrand.isPending || updateBrand.isPending}>
                         {(createBrand.isPending || updateBrand.isPending) ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Saving...
+                          </>
                         ) : editingBrand ? 'Update' : 'Create'}
                       </Button>
                     </div>
@@ -421,24 +473,51 @@ export default function AdminCategories() {
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
               </div>
             ) : (
-              <div className="border rounded-lg overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Slug</TableHead>
-                      <TableHead>Order</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {brands?.map((brand) => (
-                      <TableRow key={brand.id}>
-                        <TableCell className="font-medium">{brand.name}</TableCell>
-                        <TableCell className="text-muted-foreground">{brand.slug}</TableCell>
-                        <TableCell>{brand.display_order}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
+              <>
+                {/* Desktop Table */}
+                <div className="hidden lg:block border rounded-lg overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Slug</TableHead>
+                        <TableHead>Order</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {brands?.map((brand) => (
+                        <TableRow key={brand.id}>
+                          <TableCell className="font-medium">{brand.name}</TableCell>
+                          <TableCell className="text-muted-foreground">{brand.slug}</TableCell>
+                          <TableCell>{brand.display_order}</TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button variant="ghost" size="icon" onClick={() => handleOpenBrandEdit(brand)}>
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                              <Button variant="ghost" size="icon" onClick={() => handleBrandDelete(brand.id)}>
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="lg:hidden space-y-4">
+                  {brands?.map((brand) => (
+                    <Card key={brand.id} className="border-border/50">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-foreground mb-1 break-words">{brand.name}</h3>
+                            <p className="text-sm text-muted-foreground break-all">{brand.slug}</p>
+                          </div>
+                          <div className="flex gap-2 shrink-0 ml-2">
                             <Button variant="ghost" size="icon" onClick={() => handleOpenBrandEdit(brand)}>
                               <Pencil className="w-4 h-4" />
                             </Button>
@@ -446,12 +525,26 @@ export default function AdminCategories() {
                               <Trash2 className="w-4 h-4 text-destructive" />
                             </Button>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                        </div>
+                        {brand.logo_url && (
+                          <div className="mb-3">
+                            <img 
+                              src={brand.logo_url} 
+                              alt={brand.name} 
+                              className="h-8 object-contain"
+                            />
+                          </div>
+                        )}
+                        <div className="pt-3 border-t">
+                          <p className="text-sm text-muted-foreground">
+                            <span className="font-medium">Order:</span> {brand.display_order}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </>
             )}
           </TabsContent>
         </Tabs>

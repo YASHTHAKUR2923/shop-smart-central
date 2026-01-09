@@ -68,7 +68,7 @@ export default function Contact() {
     {
       icon: Mail,
       title: 'Email',
-      content: 'contact@parashardwares.com',
+      content: 'parashardwares.com',
       description: 'We reply within 24 hours',
     },
     {
@@ -109,7 +109,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground">{title}</h3>
-                    <p className="text-foreground">{content}</p>
+                    <p className="text-foreground break-words">{content}</p>
                     <p className="text-sm text-muted-foreground">{description}</p>
                   </div>
                 </CardContent>

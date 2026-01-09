@@ -60,14 +60,14 @@ export default function AdminInquiries() {
     await updateStatus.mutateAsync({ id: inquiryId, status });
     
     // Auto-generate quotation when status changes to 'completed'
-    if (status === 'completed') {
-      try {
-        await generateQuotation.mutateAsync(inquiryId);
-        toast.success('Deal confirmed! Quotation generated automatically.');
-      } catch (error) {
-        console.error('Error generating quotation:', error);
-      }
-    }
+    // if (status === 'completed') {
+    //   try {
+    //     await generateQuotation.mutateAsync(inquiryId);
+    //     toast.success('Deal confirmed! Quotation generated automatically.');
+    //   } catch (error) {
+    //     console.error('Error generating quotation:', error);
+    //   }
+    // }
   };
 
   const handleGenerateQuotation = async (inquiryId: string) => {
@@ -81,8 +81,8 @@ export default function AdminInquiries() {
 
   const handleConfirmDeal = async (inquiryId: string) => {
     try {
-      await updateStatus.mutateAsync({ id: inquiryId, status: 'completed' });
       await generateQuotation.mutateAsync(inquiryId);
+      await updateStatus.mutateAsync({ id: inquiryId, status: 'completed' });
       toast.success('Deal confirmed and quotation generated!');
     } catch (error: any) {
       toast.error(error.message || 'Failed to confirm deal');
