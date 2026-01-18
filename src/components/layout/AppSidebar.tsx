@@ -15,14 +15,14 @@ import {
 } from '@/components/ui/sidebar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Button } from '@/components/ui/button';
-import { 
-  Home, 
-  Laptop, 
-  Monitor, 
-  Network, 
-  Server, 
-  Cable, 
-  Package, 
+import {
+  Home,
+  Laptop,
+  Monitor,
+  Network,
+  Server,
+  Cable,
+  Package,
   ChevronDown,
   Phone,
   LogOut,
@@ -33,7 +33,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { useCategories, useBrands } from '@/hooks/useCategories';
+import { useCategories, useSubcategories, CustomCategory, CustomSubcategory } from '@/hooks/useCategories';
 import { cn } from '@/lib/utils';
 
 // Icon mapping for dynamic categories
@@ -51,10 +51,17 @@ export function AppSidebar() {
   const { user, isAdmin, signOut } = useAuth();
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
-  
+
   const { data: categories, isLoading: categoriesLoading } = useCategories();
-  const { data: brands, isLoading: brandsLoading } = useBrands();
-  
+  const { data: subcategories, isLoading: subcategoriesLoading } = useSubcategories();
+
+  // Group subcategories by category_id for easy lookup
+  const subcategoriesByCategory = (subcategories || []).reduce((acc, sub) => {
+    if (!acc[sub.category_id]) acc[sub.category_id] = [];
+    acc[sub.category_id].push(sub);
+    return acc;
+  }, {} as Record<string, CustomSubcategory[]>);
+
   const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
 
   const toggleCategory = (slug: string) => {
@@ -65,10 +72,10 @@ export function AppSidebar() {
   };
 
   const isActive = (path: string) => location.pathname === path;
-  const isCategoryActive = (slug: string) => 
+  const isCategoryActive = (slug: string) =>
     location.pathname.startsWith(`/products/${slug}`);
 
-  const isLoading = categoriesLoading || brandsLoading;
+  const isLoading = categoriesLoading || subcategoriesLoading;
 
   return (
     <Sidebar className="border-r border-sidebar-border">
@@ -94,8 +101,8 @@ export function AppSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link 
-                    to="/" 
+                  <Link
+                    to="/"
                     className={cn(
                       "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
                       isActive('/') ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
@@ -106,11 +113,11 @@ export function AppSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              
+
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link 
-                    to="/contact" 
+                  <Link
+                    to="/contact"
                     className={cn(
                       "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
                       isActive('/contact') ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
@@ -135,24 +142,47 @@ export function AppSidebar() {
                 <Loader2 className="w-5 h-5 animate-spin text-sidebar-foreground/50" />
               </div>
             ) : (
-              <SidebarMenu>
+              <SidebarMenu className="space-y-1">
                 {categories?.map((category) => {
                   const Icon = iconMap[category.icon || 'Package'] || Package;
                   const isOpen = openCategories[category.slug];
-                  
+                  const categorySubs = subcategoriesByCategory[category.id] || [];
+                  const hasSubcategories = categorySubs.length > 0;
+
+                  // If no subcategories, render as direct link
+                  if (!hasSubcategories) {
+                    return (
+                      <SidebarMenuItem key={category.id}>
+                        <SidebarMenuButton asChild>
+                          <Link
+                            to={`/products/${category.slug}`}
+                            className={cn(
+                              "group/item flex items-center gap-3 px-3 py-2 rounded-lg transition-colors h-auto min-h-8",
+                              isCategoryActive(category.slug) ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
+                            )}
+                          >
+                            <Icon className="w-5 h-5 flex-shrink-0" />
+                            {!collapsed && <span className="truncate group-hover/item:whitespace-normal">{category.name}</span>}
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  }
+
+                  // If has subcategories, render as collapsible
                   return (
                     <SidebarMenuItem key={category.id}>
                       <Collapsible open={isOpen} onOpenChange={() => toggleCategory(category.slug)}>
                         <CollapsibleTrigger asChild>
                           <SidebarMenuButton
                             className={cn(
-                              "flex items-center justify-between w-full px-3 py-2 rounded-lg transition-colors",
+                              "group/trigger flex items-center justify-between w-full px-3 py-2 rounded-lg transition-colors h-auto min-h-8",
                               isCategoryActive(category.slug) ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
                             )}
                           >
-                            <div className="flex items-center gap-3">
-                              <Icon className="w-5 h-5" />
-                              {!collapsed && <span>{category.name}</span>}
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                              <Icon className="w-5 h-5 flex-shrink-0" />
+                              {!collapsed && <span className="truncate group-hover/trigger:whitespace-normal text-left">{category.name}</span>}
                             </div>
                             {!collapsed && (
                               <ChevronDown className={cn(
@@ -162,22 +192,22 @@ export function AppSidebar() {
                             )}
                           </SidebarMenuButton>
                         </CollapsibleTrigger>
-                        
+
                         {!collapsed && (
                           <CollapsibleContent>
                             <div className="ml-8 mt-1 space-y-1">
-                              {brands?.map((brand) => (
+                              {categorySubs.map((subcategory) => (
                                 <Link
-                                  key={brand.id}
-                                  to={`/products/${category.slug}/${brand.slug}`}
+                                  key={subcategory.id}
+                                  to={`/products/${category.slug}/${subcategory.slug}`}
                                   className={cn(
-                                    "block px-3 py-1.5 text-sm rounded-md transition-colors",
-                                    location.pathname === `/products/${category.slug}/${brand.slug}`
+                                    "group/sub block px-3 py-1.5 text-sm rounded-md transition-colors h-auto",
+                                    location.pathname === `/products/${category.slug}/${subcategory.slug}`
                                       ? "bg-sidebar-primary text-sidebar-primary-foreground"
                                       : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
                                   )}
                                 >
-                                  {brand.name}
+                                  <span className="truncate group-hover/sub:whitespace-normal block">{subcategory.name}</span>
                                 </Link>
                               ))}
                             </div>
@@ -201,8 +231,8 @@ export function AppSidebar() {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <Link 
-                      to="/admin" 
+                    <Link
+                      to="/admin"
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
                         isActive('/admin') ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
@@ -215,8 +245,8 @@ export function AppSidebar() {
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <Link 
-                      to="/admin/products" 
+                    <Link
+                      to="/admin/products"
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
                         isActive('/admin/products') ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
@@ -229,8 +259,8 @@ export function AppSidebar() {
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <Link 
-                      to="/admin/categories" 
+                    <Link
+                      to="/admin/categories"
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
                         isActive('/admin/categories') ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
@@ -243,8 +273,8 @@ export function AppSidebar() {
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <Link 
-                      to="/admin/inquiries" 
+                    <Link
+                      to="/admin/inquiries"
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
                         isActive('/admin/inquiries') ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
@@ -257,8 +287,8 @@ export function AppSidebar() {
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <Link 
-                      to="/admin/users" 
+                    <Link
+                      to="/admin/users"
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
                         isActive('/admin/users') ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
@@ -277,8 +307,8 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-sidebar-border p-4">
         {user ? (
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent"
             onClick={signOut}
           >

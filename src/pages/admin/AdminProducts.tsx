@@ -31,14 +31,15 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct } from '@/hooks/useProducts';
+import { useCategories, useSubcategories } from '@/hooks/useCategories';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
-import { 
-  Product, 
-  ProductCategory, 
-  Brand, 
-  CATEGORY_LABELS, 
-  BRAND_LABELS 
+import {
+  Product,
+  ProductCategory,
+  Brand,
+  CATEGORY_LABELS,
+  BRAND_LABELS
 } from '@/types/database';
 import { Plus, Pencil, Trash2, Loader2, Package } from 'lucide-react';
 
@@ -51,22 +52,28 @@ interface ProductFormData {
   show_price: boolean;
   image_url: string;
   in_stock: boolean;
+  custom_category_id: string;
+  custom_subcategory_id: string;
 }
 
 const defaultFormData: ProductFormData = {
   name: '',
   description: '',
-  category: 'laptop',
+  category: 'other', // Default to other as this is hidden
   brand: 'dell',
   price: '',
   show_price: false,
   image_url: '',
   in_stock: true,
+  custom_category_id: '',
+  custom_subcategory_id: '',
 };
 
 export default function AdminProducts() {
   const { isAdmin, isLoading: authLoading } = useAuth();
   const { data: products, isLoading } = useProducts();
+  const { data: categories } = useCategories();
+  const { data: subcategories } = useSubcategories();
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
   const deleteProduct = useDeleteProduct();
@@ -74,6 +81,11 @@ export default function AdminProducts() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState<ProductFormData>(defaultFormData);
+
+  // Get subcategories for selected category (must be after formData declaration)
+  const filteredSubcategories = subcategories?.filter(
+    s => s.category_id === formData.custom_category_id
+  ) || [];
 
   if (authLoading) {
     return null;
@@ -100,13 +112,15 @@ export default function AdminProducts() {
       show_price: product.show_price,
       image_url: product.image_url || '',
       in_stock: product.in_stock,
+      custom_category_id: (product as any).custom_category_id || '',
+      custom_subcategory_id: (product as any).custom_subcategory_id || '',
     });
     setDialogOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const productData = {
       name: formData.name,
       description: formData.description || null,
@@ -117,6 +131,8 @@ export default function AdminProducts() {
       image_url: formData.image_url || null,
       in_stock: formData.in_stock,
       specifications: {},
+      custom_category_id: formData.custom_category_id || null,
+      custom_subcategory_id: formData.custom_subcategory_id || null,
     };
 
     try {
@@ -195,25 +211,6 @@ export default function AdminProducts() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="category">Category *</Label>
-                    <Select
-                      value={formData.category}
-                      onValueChange={(value: ProductCategory) => setFormData(prev => ({ ...prev, category: value }))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {(Object.keys(CATEGORY_LABELS) as ProductCategory[]).map((cat) => (
-                          <SelectItem key={cat} value={cat}>
-                            {CATEGORY_LABELS[cat]}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
                     <Label htmlFor="brand">Brand *</Label>
                     <Select
                       value={formData.brand}
@@ -226,6 +223,52 @@ export default function AdminProducts() {
                         {(Object.keys(BRAND_LABELS) as Brand[]).map((brand) => (
                           <SelectItem key={brand} value={brand}>
                             {BRAND_LABELS[brand]}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Custom Category & Subcategory */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="custom_category">Category *</Label>
+                    <Select
+                      value={formData.custom_category_id}
+                      onValueChange={(value) => setFormData(prev => ({
+                        ...prev,
+                        custom_category_id: value,
+                        custom_subcategory_id: '' // Reset subcategory when category changes
+                      }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories?.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id}>
+                            {cat.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="custom_subcategory">Subcategory</Label>
+                    <Select
+                      value={formData.custom_subcategory_id}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, custom_subcategory_id: value }))}
+                      disabled={!formData.custom_category_id || filteredSubcategories.length === 0}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={filteredSubcategories.length === 0 ? "No subcategories" : "Select subcategory"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {filteredSubcategories.map((sub) => (
+                          <SelectItem key={sub.id} value={sub.id}>
+                            {sub.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -347,7 +390,7 @@ export default function AdminProducts() {
                           <span className="font-medium">{product.name}</span>
                         </div>
                       </TableCell>
-                      <TableCell>{CATEGORY_LABELS[product.category]}</TableCell>
+                      <TableCell>{product.custom_category?.name || 'Uncategorized'}</TableCell>
                       <TableCell>{BRAND_LABELS[product.brand]}</TableCell>
                       <TableCell>
                         {product.show_price && product.price
@@ -406,7 +449,7 @@ export default function AdminProducts() {
                         <h3 className="font-semibold text-foreground mb-1 break-words">{product.name}</h3>
                         <div className="flex flex-wrap gap-2 mb-2">
                           <Badge variant="outline" className="text-xs">
-                            {CATEGORY_LABELS[product.category]}
+                            {product.custom_category?.name || 'Uncategorized'}
                           </Badge>
                           <Badge variant="outline" className="text-xs">
                             {BRAND_LABELS[product.brand]}
@@ -414,7 +457,7 @@ export default function AdminProducts() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
                       <div>
                         <p className="text-muted-foreground text-xs mb-1">Price</p>

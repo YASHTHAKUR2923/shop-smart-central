@@ -14,6 +14,9 @@ export interface Product {
   image_url: string | null;
   specifications: Record<string, string>;
   in_stock: boolean;
+  custom_category_id?: string | null;
+  custom_subcategory_id?: string | null;
+  custom_category?: { name: string } | null;
   created_at: string;
   updated_at: string;
 }

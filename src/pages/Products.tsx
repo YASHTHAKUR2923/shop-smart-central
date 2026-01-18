@@ -3,82 +3,157 @@ import { useParams, Link } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ProductCard } from '@/components/products/ProductCard';
 import { ContactDialog } from '@/components/products/ContactDialog';
-import { useProducts } from '@/hooks/useProducts';
+import { useProductsByCustomCategory } from '@/hooks/useProducts';
+import { useCategories, useSubcategories, useBrands } from '@/hooks/useCategories';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Product, 
-  ProductCategory, 
-  Brand, 
-  CATEGORY_LABELS, 
-  BRAND_LABELS 
-} from '@/types/database';
-import { ChevronRight, Package } from 'lucide-react';
+import { Product } from '@/types/database';
+import { ChevronRight, Package, Filter } from 'lucide-react';
 
 export default function Products() {
-  const { category, brand } = useParams<{ category: ProductCategory; brand: Brand }>();
-  const { data: products, isLoading } = useProducts(category, brand);
+  const { category: categorySlug, subcategory: subcategorySlug } = useParams<{ category?: string; subcategory?: string }>();
+
+  // Fetch categories and subcategories from database
+  const { data: categories } = useCategories();
+  const { data: subcategories } = useSubcategories();
+  const { data: brands } = useBrands();
+
+  // Find the current category and subcategory objects
+  const currentCategory = categories?.find(c => c.slug === categorySlug);
+  const currentSubcategory = subcategories?.find(s => s.slug === subcategorySlug && s.category_id === currentCategory?.id);
+
+  // Get subcategories for current category
+  const categorySubcategories = subcategories?.filter(s => s.category_id === currentCategory?.id) || [];
+
+  // Fetch products filtered by custom category and subcategory IDs
+  const { data: products, isLoading } = useProductsByCustomCategory(
+    currentCategory?.id,
+    currentSubcategory?.id
+  );
+
   const [contactProduct, setContactProduct] = useState<Product | null>(null);
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
 
   const handleContactClick = (product: Product) => {
     setContactProduct(product);
     setContactDialogOpen(true);
   };
 
+  // Filter by brand if selected
+  const displayProducts = selectedBrand
+    ? products?.filter(p => p.brand === selectedBrand)
+    : products;
+
+  // Build page title
+  const pageTitle = currentSubcategory
+    ? currentSubcategory.name
+    : currentCategory
+      ? currentCategory.name
+      : 'All Products';
+
   return (
     <MainLayout>
       <div className="container py-8">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+        <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6 flex-wrap">
           <Link to="/" className="hover:text-foreground transition-colors">
             Home
           </Link>
           <ChevronRight className="w-4 h-4" />
           <span>Products</span>
-          {category && (
+          {currentCategory && (
             <>
               <ChevronRight className="w-4 h-4" />
-              <span>{CATEGORY_LABELS[category]}</span>
+              <Link
+                to={`/products/${currentCategory.slug}`}
+                className={!currentSubcategory ? "text-foreground font-medium" : "hover:text-foreground transition-colors"}
+              >
+                {currentCategory.name}
+              </Link>
             </>
           )}
-          {brand && (
+          {currentSubcategory && (
             <>
               <ChevronRight className="w-4 h-4" />
-              <span className="text-foreground font-medium">{BRAND_LABELS[brand]}</span>
+              <span className="text-foreground font-medium">{currentSubcategory.name}</span>
             </>
           )}
         </nav>
 
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-4 flex-wrap">
             <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground">
-              {brand ? BRAND_LABELS[brand] : 'All'} {category ? CATEGORY_LABELS[category] : 'Products'}
+              {pageTitle}
             </h1>
-            {products && (
+            {displayProducts && (
               <Badge variant="secondary" className="text-base px-3 py-1">
-                {products.length} products
+                {displayProducts.length} products
               </Badge>
             )}
           </div>
-          
-          {/* Brand filter pills */}
-          {category && (
-            <div className="flex flex-wrap gap-2">
-              {(Object.keys(BRAND_LABELS) as Brand[]).map((b) => (
+
+          {/* Subcategory pills - Show if category has subcategories and we're viewing a category */}
+          {currentCategory && categorySubcategories.length > 0 && (
+            <div className="mb-4">
+              <p className="text-sm text-muted-foreground mb-2">Subcategories:</p>
+              <div className="flex flex-wrap gap-2">
                 <Link
-                  key={b}
-                  to={`/products/${category}/${b}`}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    brand === b
+                  to={`/products/${currentCategory.slug}`}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${!currentSubcategory
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                    }`}
+                >
+                  All
+                </Link>
+                {categorySubcategories.map((sub) => (
+                  <Link
+                    key={sub.id}
+                    to={`/products/${currentCategory.slug}/${sub.slug}`}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${currentSubcategory?.id === sub.id
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-                  }`}
+                      }`}
+                  >
+                    {sub.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Brand filter pills */}
+          {brands && brands.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Filter className="w-4 h-4 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">Filter by brand:</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setSelectedBrand(null)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${!selectedBrand
+                    ? 'bg-accent text-accent-foreground'
+                    : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                    }`}
                 >
-                  {BRAND_LABELS[b]}
-                </Link>
-              ))}
+                  All Brands
+                </button>
+                {brands.map((brand) => (
+                  <button
+                    key={brand.id}
+                    onClick={() => setSelectedBrand(brand.slug)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedBrand === brand.slug
+                      ? 'bg-accent text-accent-foreground'
+                      : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                      }`}
+                  >
+                    {brand.name}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -94,9 +169,9 @@ export default function Products() {
               </div>
             ))}
           </div>
-        ) : products && products.length > 0 ? (
+        ) : displayProducts && displayProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
+            {displayProducts.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}

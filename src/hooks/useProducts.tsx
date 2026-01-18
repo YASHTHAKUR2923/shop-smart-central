@@ -1,24 +1,54 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Product, ProductCategory, Brand } from '@/types/database';
-import { toast } from '@/hooks/use-toast';
 
-export function useProducts(category?: ProductCategory, brand?: Brand) {
+interface ProductInput {
+  name: string;
+  description: string | null;
+  category: ProductCategory;
+  brand: Brand;
+  price: number | null;
+  show_price: boolean;
+  image_url: string | null;
+  specifications?: Record<string, string>;
+  in_stock: boolean;
+  custom_category_id?: string | null;
+  custom_subcategory_id?: string | null;
+}
+
+export function useProducts() {
   return useQuery({
-    queryKey: ['products', category, brand],
+    queryKey: ['products'],
     queryFn: async () => {
-      let query = supabase.from('products').select('*');
-      
-      if (category) {
-        query = query.eq('category', category);
+      const { data, error } = await supabase
+        .from('products')
+        .select('*, custom_category:custom_categories(name)')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data as Product[];
+    },
+  });
+}
+
+export function useProductsByCustomCategory(categoryId?: string | null, subcategoryId?: string | null) {
+  return useQuery<Product[]>({
+    queryKey: ['products', 'category', categoryId, subcategoryId],
+    queryFn: async () => {
+      let query: any = supabase
+        .from('products')
+        .select('*');
+
+      if (categoryId) {
+        query = query.eq('custom_category_id', categoryId);
       }
-      
-      if (brand) {
-        query = query.eq('brand', brand);
+
+      if (subcategoryId) {
+        query = query.eq('custom_subcategory_id', subcategoryId);
       }
-      
+
       const { data, error } = await query.order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data as Product[];
     },
@@ -27,16 +57,16 @@ export function useProducts(category?: ProductCategory, brand?: Brand) {
 
 export function useProduct(id: string) {
   return useQuery({
-    queryKey: ['product', id],
+    queryKey: ['products', id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('products')
         .select('*')
         .eq('id', id)
-        .maybeSingle();
-      
+        .single();
+
       if (error) throw error;
-      return data as Product | null;
+      return data as Product;
     },
     enabled: !!id,
   });
@@ -44,71 +74,62 @@ export function useProduct(id: string) {
 
 export function useCreateProduct() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async (product: Omit<Product, 'id' | 'created_at' | 'updated_at'>) => {
+    mutationFn: async (product: ProductInput) => {
       const { data, error } = await supabase
         .from('products')
-        .insert(product)
+        .insert({
+          ...product,
+          specifications: product.specifications || {},
+        })
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
-      toast({ title: 'Product created successfully' });
-    },
-    onError: (error) => {
-      toast({ title: 'Error creating product', description: error.message, variant: 'destructive' });
     },
   });
 }
 
 export function useUpdateProduct() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ id, ...product }: Partial<Product> & { id: string }) => {
+    mutationFn: async ({ id, ...updates }: Partial<ProductInput> & { id: string }) => {
       const { data, error } = await supabase
         .from('products')
-        .update(product)
+        .update(updates)
         .eq('id', id)
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
-      toast({ title: 'Product updated successfully' });
-    },
-    onError: (error) => {
-      toast({ title: 'Error updating product', description: error.message, variant: 'destructive' });
     },
   });
 }
 
 export function useDeleteProduct() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from('products')
         .delete()
         .eq('id', id);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
-      toast({ title: 'Product deleted successfully' });
-    },
-    onError: (error) => {
-      toast({ title: 'Error deleting product', description: error.message, variant: 'destructive' });
     },
   });
 }
