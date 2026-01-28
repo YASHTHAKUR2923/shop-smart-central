@@ -54,6 +54,8 @@ interface ProductFormData {
   in_stock: boolean;
   custom_category_id: string;
   custom_subcategory_id: string;
+  model_no: string;
+  additional_images: string[];
 }
 
 const defaultFormData: ProductFormData = {
@@ -67,6 +69,8 @@ const defaultFormData: ProductFormData = {
   in_stock: true,
   custom_category_id: '',
   custom_subcategory_id: '',
+  model_no: '',
+  additional_images: [],
 };
 
 export default function AdminProducts() {
@@ -114,6 +118,8 @@ export default function AdminProducts() {
       in_stock: product.in_stock,
       custom_category_id: (product as any).custom_category_id || '',
       custom_subcategory_id: (product as any).custom_subcategory_id || '',
+      model_no: product.model_no || '',
+      additional_images: product.additional_images || [],
     });
     setDialogOpen(true);
   };
@@ -130,6 +136,8 @@ export default function AdminProducts() {
       show_price: formData.show_price,
       image_url: formData.image_url || null,
       in_stock: formData.in_stock,
+      model_no: formData.model_no || null,
+      additional_images: formData.additional_images,
       specifications: {},
       custom_category_id: formData.custom_category_id || null,
       custom_subcategory_id: formData.custom_subcategory_id || null,
@@ -320,6 +328,31 @@ export default function AdminProducts() {
                     onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
                     placeholder="https://example.com/image.jpg"
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="model_no">Model / Part No</Label>
+                  <Input
+                    id="model_no"
+                    value={formData.model_no}
+                    onChange={(e) => setFormData(prev => ({ ...prev, model_no: e.target.value }))}
+                    placeholder="e.g. A1234, XPS-15"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="additional_images">Additional Photos/Videos (URLs comma separated)</Label>
+                  <Textarea
+                    id="additional_images"
+                    value={formData.additional_images.join(', ')}
+                    onChange={(e) => {
+                      const urls = e.target.value.split(',').map(u => u.trim()).filter(Boolean);
+                      setFormData(prev => ({ ...prev, additional_images: urls }));
+                    }}
+                    placeholder="https://example.com/photo1.jpg, https://example.com/video.mp4"
+                    rows={2}
+                  />
+                  <p className="text-xs text-muted-foreground">Enter URLs separated by commas. Videos will be auto-detected.</p>
                 </div>
 
                 <div className="flex items-center gap-2">

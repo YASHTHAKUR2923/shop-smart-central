@@ -79,19 +79,9 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="border-r border-sidebar-border">
-      <SidebarHeader className="border-b border-sidebar-border p-4">
-        <Link to="/" className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-sidebar-primary flex items-center justify-center">
-            <span className="font-display font-bold text-sidebar-primary-foreground text-lg">PH</span>
-          </div>
-          {!collapsed && (
-            <div>
-              <h1 className="font-display font-bold text-sidebar-foreground text-lg leading-tight">
-                Paras Hardwares
-              </h1>
-              <p className="text-xs text-sidebar-foreground/60">IT Solutions</p>
-            </div>
-          )}
+      <SidebarHeader className="border-b border-sidebar-border">
+        <Link to="/" className="flex items-center justify-center">
+          <img src="/logo.png" alt="Paras Enterprises" className="h-auto w-48 object-contain" />
         </Link>
       </SidebarHeader>
 

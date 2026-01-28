@@ -14,7 +14,7 @@ export function useInquiries() {
           product:products(*)
         `)
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data as Inquiry[];
     },
@@ -23,7 +23,7 @@ export function useInquiries() {
 
 export function useCreateInquiry() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (inquiry: {
       customer_name: string;
@@ -31,6 +31,7 @@ export function useCreateInquiry() {
       customer_phone: string;
       product_id?: string;
       message?: string;
+      cart_items?: any; // strict typing can be tricky with Json type, any is safer for now or define a specific type
     }) => {
       const { error } = await supabase
         .from('inquiries')
@@ -38,15 +39,15 @@ export function useCreateInquiry() {
         // Returning representation would require SELECT RLS permissions,
         // which we intentionally keep admin-only for PII.
         .insert([inquiry]);
-      
+
       if (error) throw error;
       return null;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inquiries'] });
-      toast({ 
-        title: 'Inquiry submitted successfully', 
-        description: 'Our team will contact you shortly.' 
+      toast({
+        title: 'Inquiry submitted successfully',
+        description: 'Our team will contact you shortly.'
       });
     },
     onError: (error) => {
@@ -57,7 +58,7 @@ export function useCreateInquiry() {
 
 export function useUpdateInquiryStatus() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({ id, status }: { id: string; status: InquiryStatus }) => {
       const { data, error } = await supabase
@@ -66,7 +67,7 @@ export function useUpdateInquiryStatus() {
         .eq('id', id)
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },

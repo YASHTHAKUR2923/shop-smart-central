@@ -12,6 +12,8 @@ interface ProductInput {
   image_url: string | null;
   specifications?: Record<string, string>;
   in_stock: boolean;
+  model_no?: string | null;
+  additional_images?: string[] | null;
   custom_category_id?: string | null;
   custom_subcategory_id?: string | null;
 }

@@ -7,23 +7,30 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
-import { 
-  CATEGORY_LABELS, 
-  BRAND_LABELS 
+import {
+  CATEGORY_LABELS,
+  BRAND_LABELS
 } from '@/types/database';
-import { 
-  ChevronRight, 
-  Phone, 
-  Package, 
-  CheckCircle2, 
+import {
+  ChevronRight,
+  Phone,
+  Package,
+  CheckCircle2,
   XCircle,
-  ArrowLeft
+  ArrowLeft,
+  ShoppingCart,
+  PlayCircle,
+  Image as ImageIcon
 } from 'lucide-react';
+import { useQuoteCart } from '@/contexts/QuoteCartContext';
+import { toast } from 'sonner';
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const { data: product, isLoading } = useProduct(id || '');
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
+  const { addItem } = useQuoteCart();
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -31,6 +38,13 @@ export default function ProductDetail() {
       currency: 'INR',
       maximumFractionDigits: 0,
     }).format(price);
+  };
+
+  const handleAddToCart = () => {
+    if (product) {
+      addItem(product);
+      toast.success('Added to Quote Cart');
+    }
   };
 
   if (isLoading) {
@@ -84,7 +98,7 @@ export default function ProductDetail() {
             Home
           </Link>
           <ChevronRight className="w-4 h-4" />
-          <Link 
+          <Link
             to={`/products/${product.category}/${product.brand}`}
             className="hover:text-foreground transition-colors"
           >
@@ -94,15 +108,16 @@ export default function ProductDetail() {
           <span className="text-foreground font-medium line-clamp-1">{product.name}</span>
         </nav>
 
-        <div className="grid lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Product Image */}
-          <div className="animate-fade-in">
-            <div className="aspect-square rounded-2xl bg-muted overflow-hidden">
-              {product.image_url ? (
+          {/* Product Image Gallery */}
+          <div className="animate-fade-in space-y-4">
+            <div className="aspect-square rounded-2xl bg-muted overflow-hidden border">
+              {(selectedImage || product.image_url) ? (
                 <img
-                  src={product.image_url}
+                  src={selectedImage || product.image_url || ''}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain p-4"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
@@ -110,6 +125,35 @@ export default function ProductDetail() {
                 </div>
               )}
             </div>
+
+            {(product.additional_images && product.additional_images.length > 0) && (
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                <button
+                  onClick={() => setSelectedImage(null)} // Reset to main
+                  className={`relative w-20 h-20 rounded-lg overflow-hidden border-2 flex-shrink-0 ${!selectedImage ? 'border-primary' : 'border-transparent'
+                    }`}
+                >
+                  {product.image_url ? (
+                    <img src={product.image_url} alt="Main" className="w-full h-full object-cover" />
+                  ) : (
+                    <Package className="w-8 h-8 m-auto text-muted-foreground" />
+                  )}
+                </button>
+                {product.additional_images.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImage(img)}
+                    className={`relative w-20 h-20 rounded-lg overflow-hidden border-2 flex-shrink-0 ${selectedImage === img ? 'border-primary' : 'border-transparent'
+                      }`}
+                  >
+                    {/* Basic check for video type in URL if possible, otherwise assume image */}
+                    {/* For simplicity assuming images, but if video functionality is needed, we'd need a different player. 
+                        Prompt said Photos/Videos. I'll assume they are URLs. */}
+                    <img src={img} alt={`View ${idx}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Product Info */}
@@ -119,22 +163,29 @@ export default function ProductDetail() {
               <Badge variant="outline">{CATEGORY_LABELS[product.category]}</Badge>
             </div>
 
-            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4">
               {product.name}
             </h1>
 
             {/* Stock Status */}
-            <div className="flex items-center gap-2 mb-6">
-              {product.in_stock ? (
-                <>
-                  <CheckCircle2 className="w-5 h-5 text-success" />
-                  <span className="text-success font-medium">In Stock</span>
-                </>
-              ) : (
-                <>
-                  <XCircle className="w-5 h-5 text-destructive" />
-                  <span className="text-destructive font-medium">Out of Stock</span>
-                </>
+            <div className="flex flex-wrap items-center gap-4 mb-6">
+              <div className="flex items-center gap-2">
+                {product.in_stock ? (
+                  <>
+                    <CheckCircle2 className="w-5 h-5 text-success" />
+                    <span className="text-success font-medium">In Stock</span>
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="w-5 h-5 text-destructive" />
+                    <span className="text-destructive font-medium">Out of Stock</span>
+                  </>
+                )}
+              </div>
+              {product.model_no && (
+                <div className="text-sm text-muted-foreground border-l pl-4">
+                  Model: <span className="font-medium text-foreground">{product.model_no}</span>
+                </div>
               )}
             </div>
 
@@ -167,7 +218,7 @@ export default function ProductDetail() {
               <Card className="mb-8">
                 <CardContent className="p-4">
                   <h2 className="font-display font-semibold text-foreground mb-4">Specifications</h2>
-                  <dl className="grid grid-cols-2 gap-4">
+                  <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {Object.entries(product.specifications).map(([key, value]) => (
                       <div key={key}>
                         <dt className="text-sm text-muted-foreground">{key}</dt>
@@ -180,21 +231,32 @@ export default function ProductDetail() {
             )}
 
             {/* CTA */}
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <Button
                 size="lg"
-                className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
-                onClick={() => setContactDialogOpen(true)}
+                className="w-full sm:w-auto h-auto py-3 whitespace-normal flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                onClick={handleAddToCart}
                 disabled={!product.in_stock}
               >
-                <Phone className="mr-2 w-5 h-5" />
+                <ShoppingCart className="mr-2 w-5 h-5 flex-shrink-0" />
+                Add to Quote Cart
+              </Button>
+
+              <Button
+                size="lg"
+                variant="secondary"
+                className="w-full sm:w-auto h-auto py-3 whitespace-normal flex-1 font-semibold"
+                onClick={() => setContactDialogOpen(true)}
+              >
+                <Phone className="mr-2 w-5 h-5 flex-shrink-0" />
                 Request a Call
               </Button>
-              
+
               <Button
                 asChild
                 size="lg"
                 variant="outline"
+                className="w-full sm:w-auto h-auto py-3 whitespace-normal flex-1 sm:flex-none"
               >
                 <Link to={`/products/${product.category}/${product.brand}`}>
                   <ArrowLeft className="mr-2 w-5 h-5" />

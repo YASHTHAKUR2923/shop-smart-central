@@ -17,6 +17,8 @@ export interface Product {
   custom_category_id?: string | null;
   custom_subcategory_id?: string | null;
   custom_category?: { name: string } | null;
+  model_no?: string | null;
+  additional_images?: string[] | null;
   created_at: string;
   updated_at: string;
 }
