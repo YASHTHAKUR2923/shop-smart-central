@@ -2,14 +2,14 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { 
-  Laptop, 
-  Monitor, 
-  Network, 
-  Server, 
-  Cable, 
-  Phone, 
-  Mail, 
+import {
+  Laptop,
+  Monitor,
+  Network,
+  Server,
+  Cable,
+  Phone,
+  Mail,
   MapPin,
   ArrowRight,
   Shield,
@@ -40,20 +40,19 @@ export default function Index() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.05%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')] opacity-60" />
-        
+
         <div className="container relative py-20 lg:py-32">
           <div className="max-w-3xl animate-fade-in">
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              Your Trusted Partner for{' '}
-              <span className="text-accent">Enterprise IT Solutions</span>
+              DESIGN  OPTIMIZE  {' '}
+              <span className="text-accent">EXECUTE  SCALE</span>
             </h1>
             <p className="text-lg md:text-xl text-primary-foreground/80 mb-8 max-w-2xl">
-              Paras Hardwares provides top-quality laptops, desktops, servers, and networking equipment from leading brands like Dell, HP, Lenovo, and more.
-            </p>
+              FROM VISION TO EXECUTION – OPTIMIZING IT TO SCALE </p>
             <div className="flex flex-wrap gap-4">
-              <Button 
-                asChild 
-                size="lg" 
+              <Button
+                asChild
+                size="lg"
                 className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold px-8 animate-pulse-glow"
               >
                 <Link to="/products/laptop/">
@@ -61,10 +60,10 @@ export default function Index() {
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
-              <Button 
-                asChild 
-                size="lg" 
-                variant="outline" 
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
                 className="border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground bg-transparent backdrop-blur-sm"
               >
                 <Link to="/contact" className="flex items-center gap-2">
@@ -91,8 +90,8 @@ export default function Index() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
             {categoryData.map(({ category, icon: Icon, description }, index) => (
-              <Link 
-                key={category} 
+              <Link
+                key={category}
                 to={`/products/${category}/dell`}
                 className="group"
                 style={{ animationDelay: `${index * 100}ms` }}
@@ -124,14 +123,14 @@ export default function Index() {
               Why Choose Paras Hardwares?
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              We're committed to providing the best IT solutions for your business
+              Integrity: We uphold transparency, ethics and accountability in all engagements.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map(({ icon: Icon, title, description }, index) => (
-              <div 
-                key={title} 
+              <div
+                key={title}
                 className="text-center animate-fade-in"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
@@ -152,15 +151,18 @@ export default function Index() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="animate-slide-in-left">
               <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-6">
-                About Paras Hardwares
-              </h2>
+PARAS ENTERPRISES              </h2>
               <p className="text-muted-foreground mb-4">
-                Established with a vision to provide top-quality IT infrastructure solutions, Paras Hardwares has become a trusted name in the industry. We specialize in supplying enterprise-grade hardware from globally recognized brands.
-              </p>
+                We are a team filled with Passionate and dedicated spirits & hold our strengths in
+                IT Hardware Supply, Infrastructure services, Server, Storage & Network Management,
+                Data Migrations across different platforms,              </p>
               <p className="text-muted-foreground mb-6">
-                Our commitment to quality, competitive pricing, and exceptional customer service has helped us build long-lasting relationships with businesses across India. Whether you need a single laptop or a complete server infrastructure, we have you covered.
-              </p>
-              
+                Creation of Virtualisation Environments
+                as per requirements, Datacenter Management & Co-Location Services & Consultation
+                for Your IT/ Digitalization & Automation Requirements & Needs.
+
+                Moving towards Excellence and Growth Since 2017.              </p>
+
               <div className="space-y-4">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -168,27 +170,30 @@ export default function Index() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground">Our Location</h4>
-                    <p className="text-sm text-muted-foreground">Mumbai, Maharashtra, India</p>
+                    <p className="text-sm text-muted-foreground">
+                      SH NO B8 BUILDING C,
+                      SWAMIPURAM 2161/B, NEAR S P M SCHOOL, SADASHIV PETH, Pune,
+                      Maharashtra, 411030</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                     <Phone className="w-5 h-5 text-primary" />
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground">Phone</h4>
-                    <p className="text-sm text-muted-foreground">+91 98765 43210</p>
+                    <p className="text-sm text-muted-foreground">+91 8766632609 </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                     <Mail className="w-5 h-5 text-primary" />
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground">Email</h4>
-                    <p className="text-sm text-muted-foreground">contact@parashardwares.com</p>
+                    <p className="text-sm text-muted-foreground">shreyans.bhandari@parasenterprises.store</p>
                   </div>
                 </div>
               </div>
@@ -218,9 +223,9 @@ export default function Index() {
           <p className="text-primary-foreground/80 text-lg mb-8 max-w-2xl mx-auto">
             Get in touch with us today for competitive quotes and expert guidance on your IT hardware needs.
           </p>
-          <Button 
-            asChild 
-            size="lg" 
+          <Button
+            asChild
+            size="lg"
             className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold px-8"
           >
             <Link to="/contact">
