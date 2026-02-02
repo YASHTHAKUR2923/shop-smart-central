@@ -8,6 +8,9 @@ interface AuthContextType {
   session: Session | null;
   isLoading: boolean;
   isAdmin: boolean;
+  isSale: boolean;
+  isProductManager: boolean;
+  userRole: AppRole | null;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -20,6 +23,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isSale, setIsSale] = useState(false);
+  const [isProductManager, setIsProductManager] = useState(false);
+  const [userRole, setUserRole] = useState<AppRole | null>(null);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -35,6 +41,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }, 0);
         } else {
           setIsAdmin(false);
+          setIsSale(false);
+          setIsProductManager(false);
+          setUserRole(null);
         }
       }
     );
@@ -59,16 +68,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .from('user_roles')
         .select('role')
         .eq('user_id', userId)
-        .eq('role', 'admin')
         .maybeSingle();
 
       if (!error && data) {
-        setIsAdmin(true);
+        const role: AppRole = data.role;
+        setUserRole(role);
+        setIsAdmin(role === 'admin');
+        setIsSale(role === 'sale');
+        setIsProductManager(role === 'product_manager');
       } else {
+        setUserRole(null);
         setIsAdmin(false);
+        setIsSale(false);
+        setIsProductManager(false);
       }
     } catch {
+      setUserRole(null);
       setIsAdmin(false);
+      setIsSale(false);
+      setIsProductManager(false);
     }
   };
 
@@ -103,10 +121,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setSession(null);
     setIsAdmin(false);
+    setIsSale(false);
+    setIsProductManager(false);
+    setUserRole(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isLoading, isAdmin, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, session, isLoading, isAdmin, isSale, isProductManager, userRole, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

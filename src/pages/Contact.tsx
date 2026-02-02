@@ -6,11 +6,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCreateInquiry } from '@/hooks/useInquiries';
-import { 
-  Phone, 
-  Mail, 
-  MapPin, 
-  Clock, 
+import {
+  Phone,
+  Mail,
+  MapPin,
+  Clock,
   Loader2,
   User,
   MessageSquare
@@ -200,8 +200,8 @@ export default function Contact() {
                   )}
                 </div>
 
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   size="lg"
                   className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
                   disabled={createInquiry.isPending}

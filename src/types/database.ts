@@ -1,7 +1,7 @@
 export type ProductCategory = 'laptop' | 'desktop' | 'network_module' | 'server' | 'accessories' | 'other';
 export type Brand = 'dell' | 'hp' | 'lenovo' | 'asus' | 'acer' | 'cisco' | 'juniper' | 'netgear' | 'other';
 export type InquiryStatus = 'pending' | 'contacted' | 'quoted' | 'completed' | 'cancelled';
-export type AppRole = 'admin' | 'customer';
+export type AppRole = 'admin' | 'sale' | 'product_manager' | 'customer';
 
 export interface Product {
   id: string;

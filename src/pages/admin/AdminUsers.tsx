@@ -36,11 +36,15 @@ import { toast } from 'sonner';
 
 const ROLE_LABELS: Record<AppRole, string> = {
   admin: 'Administrator',
+  sale: 'Sales Manager',
+  product_manager: 'Product Manager',
   customer: 'Customer',
 };
 
 const ROLE_COLORS: Record<AppRole, string> = {
   admin: 'bg-primary/20 text-primary border-primary/30',
+  sale: 'bg-blue-100/50 text-blue-700 border-blue-300/50',
+  product_manager: 'bg-purple-100/50 text-purple-700 border-purple-300/50',
   customer: 'bg-muted text-muted-foreground border-muted',
 };
 
@@ -188,6 +192,8 @@ export default function AdminUsers() {
             <SelectContent>
               <SelectItem value="all">All Roles</SelectItem>
               <SelectItem value="admin">Administrators</SelectItem>
+              <SelectItem value="sale">Sales Managers</SelectItem>
+              <SelectItem value="product_manager">Product Managers</SelectItem>
               <SelectItem value="customer">Customers</SelectItem>
             </SelectContent>
           </Select>
@@ -246,6 +252,8 @@ export default function AdminUsers() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="admin">Administrator</SelectItem>
+                            <SelectItem value="sale">Sales Manager</SelectItem>
+                            <SelectItem value="product_manager">Product Manager</SelectItem>
                             <SelectItem value="customer">Customer</SelectItem>
                           </SelectContent>
                         </Select>
@@ -294,6 +302,8 @@ export default function AdminUsers() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="admin">Administrator</SelectItem>
+                            <SelectItem value="sale">Sales Manager</SelectItem>
+                            <SelectItem value="product_manager">Product Manager</SelectItem>
                             <SelectItem value="customer">Customer</SelectItem>
                           </SelectContent>
                         </Select>
