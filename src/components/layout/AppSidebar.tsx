@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useCategories, useSubcategories, CustomCategory, CustomSubcategory } from '@/hooks/useCategories';
+import { useServiceCategories, useServiceSubcategories } from '@/hooks/useServiceCategories';
 import { cn } from '@/lib/utils';
 
 // Icon mapping for dynamic categories
@@ -55,12 +56,21 @@ export function AppSidebar() {
   const { data: categories, isLoading: categoriesLoading } = useCategories();
   const { data: subcategories, isLoading: subcategoriesLoading } = useSubcategories();
 
+  const { data: serviceCategories, isLoading: serviceCategoriesLoading } = useServiceCategories();
+  const { data: serviceSubcategories, isLoading: serviceSubcategoriesLoading } = useServiceSubcategories();
+
   // Group subcategories by category_id for easy lookup
   const subcategoriesByCategory = (subcategories || []).reduce((acc, sub) => {
     if (!acc[sub.category_id]) acc[sub.category_id] = [];
     acc[sub.category_id].push(sub);
     return acc;
   }, {} as Record<string, CustomSubcategory[]>);
+
+  const serviceSubcategoriesByCategory = (serviceSubcategories || []).reduce((acc, sub) => {
+    if (!acc[sub.category_id]) acc[sub.category_id] = [];
+    acc[sub.category_id].push(sub);
+    return acc;
+  }, {} as Record<string, any[]>);
 
   const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
 
@@ -74,6 +84,8 @@ export function AppSidebar() {
   const isActive = (path: string) => location.pathname === path;
   const isCategoryActive = (slug: string) =>
     location.pathname.startsWith(`/products/${slug}`);
+  const isServiceCategoryActive = (slug: string) =>
+    location.pathname.startsWith(`/services/${slug}`);
 
   const isLoading = categoriesLoading || subcategoriesLoading;
 
@@ -212,6 +224,61 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-3 text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+            {!collapsed && 'Services'}
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            {serviceCategoriesLoading ? (
+              <div className="flex justify-center py-4">
+                <Loader2 className="w-5 h-5 animate-spin text-sidebar-foreground/50" />
+              </div>
+            ) : (
+              <SidebarMenu className="space-y-1">
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link
+                      to="/services"
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
+                        isActive('/services') ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
+                      )}
+                    >
+                      <Package className="w-5 h-5" />
+                      {!collapsed && <span>All Services</span>}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                {serviceCategories?.map((category) => {
+                  const Icon = iconMap[category.icon || 'Package'] || Package;
+                  const isOpen = openCategories[`service-${category.slug}`];
+                  const categorySubs = serviceSubcategoriesByCategory[category.id] || [];
+                  const hasSubcategories = false; // Disable subcategories in sidebar for services for now to keep it simple, or enablement logic needs to be fixed.
+                  // Actually, let's enable it if we want. But the user asked for services showing to customers also.
+                  // Let's replicate the logic.
+
+                  return (
+                    <SidebarMenuItem key={category.id}>
+                      <SidebarMenuButton asChild>
+                        <Link
+                          to={`/services/${category.slug}`}
+                          className={cn(
+                            "group/item flex items-center gap-3 px-3 py-2 rounded-lg transition-colors h-auto min-h-8",
+                            isServiceCategoryActive(category.slug) ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
+                          )}
+                        >
+                          <Icon className="w-5 h-5 flex-shrink-0" />
+                          {!collapsed && <span className="truncate group-hover/item:whitespace-normal">{category.name}</span>}
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            )}
+          </SidebarGroupContent>
+        </SidebarGroup>
+
         {isAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel className="px-3 text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
@@ -250,6 +317,20 @@ export function AppSidebar() {
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
                     <Link
+                      to="/admin/services"
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
+                        isActive('/admin/services') ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
+                      )}
+                    >
+                      <Server className="w-5 h-5" />
+                      {!collapsed && <span>Services</span>}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link
                       to="/admin/categories"
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
@@ -257,7 +338,21 @@ export function AppSidebar() {
                       )}
                     >
                       <FolderTree className="w-5 h-5" />
-                      {!collapsed && <span>Categories</span>}
+                      {!collapsed && <span>Prod. Categories</span>}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link
+                      to="/admin/service-categories"
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
+                        isActive('/admin/service-categories') ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
+                      )}
+                    >
+                      <FolderTree className="w-5 h-5" />
+                      {!collapsed && <span>Serv. Categories</span>}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -314,6 +409,6 @@ export function AppSidebar() {
           </Button>
         )}
       </SidebarFooter>
-    </Sidebar>
+    </Sidebar >
   );
 }

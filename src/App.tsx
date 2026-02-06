@@ -17,6 +17,9 @@ import AdminCategories from "./pages/admin/AdminCategories";
 import AdminInquiries from "./pages/admin/AdminInquiries";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminServiceCategories from "./pages/admin/AdminServiceCategories";
+import Services from "./pages/Services";
+import ServiceDetail from "./pages/ServiceDetail";
+import AdminServices from "./pages/admin/AdminServices";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,7 +37,12 @@ const App = () => (
               <Route path="/products" element={<Products />} />
               <Route path="/products/:category" element={<Products />} />
               <Route path="/products/:category/:subcategory" element={<Products />} />
+
               <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/services/:category" element={<Services />} />
+              <Route path="/services/:category/:subcategory" element={<Services />} />
+              <Route path="/service/:id" element={<ServiceDetail />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/setup-admin" element={<AdminSetup />} />
@@ -43,6 +51,7 @@ const App = () => (
               <Route path="/admin/categories" element={<AdminCategories />} />
               <Route path="/admin/inquiries" element={<AdminInquiries />} />
               <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/services" element={<AdminServices />} />
               <Route path="/admin/service-categories" element={<AdminServiceCategories />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
