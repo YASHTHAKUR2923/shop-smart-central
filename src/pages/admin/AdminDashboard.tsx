@@ -5,10 +5,10 @@ import { useProducts } from '@/hooks/useProducts';
 import { useInquiries } from '@/hooks/useInquiries';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
-import { 
-  Package, 
-  Phone, 
-  TrendingUp, 
+import {
+  Package,
+  Phone,
+  TrendingUp,
   AlertCircle,
   ArrowRight
 } from 'lucide-react';
@@ -120,6 +120,36 @@ export default function AdminDashboard() {
                 </CardTitle>
                 <CardDescription>
                   Manage customer inquiries and send quotations
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6 mt-6">
+          <Link to="/admin/categories">
+            <Card className="hover:border-primary/50 transition-colors cursor-pointer group">
+              <CardHeader>
+                <CardTitle className="font-display flex items-center justify-between">
+                  Product Categories
+                  <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                </CardTitle>
+                <CardDescription>
+                  Manage product categories, subcategories & brands
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+
+          <Link to="/admin/service-categories">
+            <Card className="hover:border-primary/50 transition-colors cursor-pointer group">
+              <CardHeader>
+                <CardTitle className="font-display flex items-center justify-between">
+                  Service Categories
+                  <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                </CardTitle>
+                <CardDescription>
+                  Manage service categories & subcategories
                 </CardDescription>
               </CardHeader>
             </Card>
