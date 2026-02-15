@@ -61,6 +61,7 @@ export function ContactDialog({ product, open, onOpenChange, webhookUrl }: Conta
       await createInquiry.mutateAsync({
         ...formData,
         product_id: product?.id,
+        product: product ? { name: product.name, category: product.category } : undefined,
       });
 
       // Send to Zapier webhook if configured

@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.generate-quotation]
 verify_jwt = false
+
+[functions.send-inquiry-notification]
+verify_jwt = false

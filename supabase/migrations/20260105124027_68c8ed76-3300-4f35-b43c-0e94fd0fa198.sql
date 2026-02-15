@@ -1,17 +1,33 @@
 -- Create enum for product categories
-CREATE TYPE public.product_category AS ENUM ('laptop', 'desktop', 'network_module', 'server', 'accessories', 'other');
+DO $$ BEGIN
+  CREATE TYPE public.product_category AS ENUM ('laptop', 'desktop', 'network_module', 'server', 'accessories', 'other');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
 -- Create enum for brands
-CREATE TYPE public.brand AS ENUM ('dell', 'hp', 'lenovo', 'asus', 'acer', 'cisco', 'juniper', 'netgear', 'other');
+DO $$ BEGIN
+  CREATE TYPE public.brand AS ENUM ('dell', 'hp', 'lenovo', 'asus', 'acer', 'cisco', 'juniper', 'netgear', 'other');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
 -- Create enum for inquiry status
-CREATE TYPE public.inquiry_status AS ENUM ('pending', 'contacted', 'quoted', 'completed', 'cancelled');
+DO $$ BEGIN
+  CREATE TYPE public.inquiry_status AS ENUM ('pending', 'contacted', 'quoted', 'completed', 'cancelled');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
 -- Create enum for user roles
-CREATE TYPE public.app_role AS ENUM ('admin', 'customer');
+DO $$ BEGIN
+  CREATE TYPE public.app_role AS ENUM ('admin', 'customer');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
 
 -- Create products table
-CREATE TABLE public.products (
+CREATE TABLE IF NOT EXISTS public.products (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
   description TEXT,
@@ -27,7 +43,7 @@ CREATE TABLE public.products (
 );
 
 -- Create customer inquiries table
-CREATE TABLE public.inquiries (
+CREATE TABLE IF NOT EXISTS public.inquiries (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   customer_name TEXT NOT NULL,
   customer_email TEXT NOT NULL,
@@ -40,7 +56,7 @@ CREATE TABLE public.inquiries (
 );
 
 -- Create user profiles table
-CREATE TABLE public.profiles (
+CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
   full_name TEXT,
@@ -51,7 +67,7 @@ CREATE TABLE public.profiles (
 );
 
 -- Create user roles table (separate for security)
-CREATE TABLE public.user_roles (
+CREATE TABLE IF NOT EXISTS public.user_roles (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   role app_role NOT NULL DEFAULT 'customer',
@@ -59,7 +75,7 @@ CREATE TABLE public.user_roles (
 );
 
 -- Create quotations table
-CREATE TABLE public.quotations (
+CREATE TABLE IF NOT EXISTS public.quotations (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   inquiry_id UUID REFERENCES public.inquiries(id) ON DELETE SET NULL,
   customer_email TEXT NOT NULL,

@@ -21,6 +21,30 @@ export function useInquiries() {
   });
 }
 
+const SEND_INQUIRY_EMAIL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-inquiry-notification`;
+
+async function sendInquiryEmailNotification(payload: {
+  id: string;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
+  product_id?: string | null;
+  message?: string | null;
+  status: string;
+  created_at: string;
+  product?: { name: string; category: string };
+}) {
+  try {
+    await fetch(SEND_INQUIRY_EMAIL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  } catch (err) {
+    console.warn('Email notification failed:', err);
+  }
+}
+
 export function useCreateInquiry() {
   const queryClient = useQueryClient();
 
@@ -31,16 +55,29 @@ export function useCreateInquiry() {
       customer_phone: string;
       product_id?: string;
       message?: string;
-      cart_items?: any; // strict typing can be tricky with Json type, any is safer for now or define a specific type
+      cart_items?: any;
+      product?: { name: string; category: string };
     }) => {
+      const { product, ...dbInquiry } = inquiry;
       const { error } = await supabase
         .from('inquiries')
-        // IMPORTANT: don't request the inserted row back.
-        // Returning representation would require SELECT RLS permissions,
-        // which we intentionally keep admin-only for PII.
-        .insert([inquiry]);
+        .insert([dbInquiry]);
 
       if (error) throw error;
+
+      // Send email notification (database trigger may fail, so we call from app too)
+      sendInquiryEmailNotification({
+        id: `app-${Date.now()}`,
+        customer_name: inquiry.customer_name,
+        customer_email: inquiry.customer_email,
+        customer_phone: inquiry.customer_phone,
+        product_id: inquiry.product_id ?? null,
+        message: inquiry.message ?? null,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+        product: inquiry.product,
+      });
+
       return null;
     },
     onSuccess: () => {
