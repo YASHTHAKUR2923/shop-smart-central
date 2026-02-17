@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { MainLayout } from '@/components/layout/MainLayout';
 import {
   Laptop,
@@ -15,9 +16,28 @@ import {
   Shield,
   Truck,
   HeadphonesIcon,
-  Award
+  Award,
+  Package,
+  Wrench,
+  Cloud,
+  Settings,
+  Cpu
 } from 'lucide-react';
 import { CATEGORY_LABELS, ProductCategory } from '@/types/database';
+import { useServicesByCategory } from '@/hooks/useServices';
+
+const SERVICE_ICON_MAP: Record<string, React.ElementType> = {
+  Package,
+  Wrench,
+  Server,
+  Cloud,
+  Settings,
+  Cpu,
+  Laptop,
+  Monitor,
+  Network,
+  Cable,
+};
 
 const categoryData: { category: ProductCategory; icon: React.ElementType; description: string }[] = [
   { category: 'laptop', icon: Laptop, description: 'Business & Enterprise Laptops' },
@@ -35,6 +55,8 @@ const features = [
 ];
 
 export default function Index() {
+  const { data: services, isLoading: servicesLoading } = useServicesByCategory();
+
   return (
     <MainLayout>
       {/* Hero Section */}
@@ -115,8 +137,58 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Services Section */}
       <section className="py-16 lg:py-24 bg-muted/50">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Our Services
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Explore our range of IT infrastructure and professional services
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            {servicesLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton key={i} className="h-48 rounded-lg" />
+              ))
+            ) : (services ?? []).length > 0 ? (
+              (services ?? []).map((service, index) => (
+                <Link
+                  key={service.id}
+                  to={`/service/${service.id}`}
+                  className="group"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <Card className="h-full border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300 animate-fade-in">
+                    <CardContent className="p-6 text-center">
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
+                        <Wrench className="w-8 h-8 text-primary group-hover:text-primary-foreground transition-colors" />
+                      </div>
+                      <h3 className="font-display font-semibold text-foreground mb-2 group-hover:text-primary transition-colors capitalize">
+                        {service.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {service.description || 'Get in touch for details'}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12 text-muted-foreground">
+                <Wrench className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>No services available yet. Add services in Admin to display them here.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-16 lg:py-24 bg-background">
         <div className="container">
           <div className="text-center mb-12">
             <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
