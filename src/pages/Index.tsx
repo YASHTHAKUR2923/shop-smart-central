@@ -50,7 +50,7 @@ const categoryData: { category: ProductCategory; icon: React.ElementType; descri
 const features = [
   { icon: Shield, title: 'Genuine Products', description: 'All products sourced from authorized distributors' },
   { icon: Truck, title: 'Fast Delivery', description: 'Quick delivery across India with proper packaging' },
-  { icon: HeadphonesIcon, title: '24/7 Support', description: 'Round-the-clock technical support for all products' },
+  { icon: HeadphonesIcon, title: '24/7 Technical Care', description: 'Round-the-clock technical support for all products' },
   { icon: Award, title: 'Best Prices', description: 'Competitive pricing with bulk order discounts' },
 ];
 
@@ -216,6 +216,19 @@ export default function Index() {
           </div>
         </div>
       </section>
+      <div className="flex justify-center">
+  <Button
+    asChild
+    size="lg"
+    className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold px-8"
+  >
+    <Link to="/contact" className="flex items-center">
+      Get a Quote
+      <ArrowRight className="ml-2 w-5 h-5" />
+    </Link>
+  </Button>
+</div>
+
 
       {/* About Section */}
       <section className="py-16 lg:py-24 bg-background">
@@ -295,7 +308,7 @@ PARAS ENTERPRISES              </h2>
           <p className="text-primary-foreground/80 text-lg mb-8 max-w-2xl mx-auto">
             Get in touch with us today for competitive quotes and expert guidance on your IT hardware needs.
           </p>
-          <Button
+          {/* <Button
             asChild
             size="lg"
             className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold px-8"
@@ -304,7 +317,7 @@ PARAS ENTERPRISES              </h2>
               Get a Quote
               <ArrowRight className="ml-2 w-5 h-5" />
             </Link>
-          </Button>
+          </Button> */}
         </div>
       </section>
 

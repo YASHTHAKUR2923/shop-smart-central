@@ -22,25 +22,37 @@ import { useGenerateQuotation } from '@/hooks/useQuotations';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 import { InquiryStatus } from '@/types/database';
-import { Loader2, Phone, Mail, MessageSquare, Package, FileText, CheckCircle } from 'lucide-react';
+import {
+  Loader2,
+  Phone,
+  Mail,
+  MessageSquare,
+  Package,
+  FileText,
+  CheckCircle,
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import jsPDF from 'jspdf';
 
+/* ===================== STATUS LABELS ===================== */
 const STATUS_LABELS: Record<InquiryStatus, string> = {
   pending: 'Pending',
   contacted: 'Contacted',
   quoted: 'Quoted',
   completed: 'Completed',
   cancelled: 'Cancelled',
+  priority: 'Priority', // ✅ ADDED
 };
 
+/* ===================== STATUS COLORS ===================== */
 const STATUS_COLORS: Record<InquiryStatus, string> = {
   pending: 'bg-warning/20 text-warning border-warning/30',
   contacted: 'bg-primary/20 text-primary border-primary/30',
   quoted: 'bg-accent/20 text-accent border-accent/30',
   completed: 'bg-success/20 text-success border-success/30',
   cancelled: 'bg-destructive/20 text-destructive border-destructive/30',
+  priority: 'bg-orange-500/20 text-orange-600 border-orange-500/30', // ✅ ADDED
 };
 
 export default function AdminInquiries() {
@@ -52,21 +64,24 @@ export default function AdminInquiries() {
   if (authLoading) return null;
   if (!isAdmin) return <Navigate to="/" replace />;
 
-  const handleStatusChange = async (inquiryId: string, status: InquiryStatus) => {
-    await updateStatus.mutateAsync({ id: inquiryId, status });
+  /* ===================== STATUS CHANGE ===================== */
+  const handleStatusChange = async (id: string, status: InquiryStatus) => {
+    await updateStatus.mutateAsync({ id, status });
+    toast.success(`Status updated to ${STATUS_LABELS[status]}`);
   };
 
-  const handleConfirmDeal = async (inquiryId: string) => {
+  /* ===================== CONFIRM DEAL ===================== */
+  const handleConfirmDeal = async (id: string) => {
     try {
-      await generateQuotation.mutateAsync(inquiryId);
-      await updateStatus.mutateAsync({ id: inquiryId, status: 'completed' });
-      toast.success('Deal confirmed and quotation generated!');
+      await generateQuotation.mutateAsync(id);
+      await updateStatus.mutateAsync({ id, status: 'completed' });
+      toast.success('Deal confirmed & quotation generated');
     } catch (error: any) {
       toast.error(error.message || 'Failed to confirm deal');
     }
   };
 
-  // ✅ PDF DOWNLOAD FUNCTION
+  /* ===================== PDF DOWNLOAD ===================== */
   const handleDownloadPDF = (inquiry: any) => {
     const doc = new jsPDF();
 
@@ -83,7 +98,11 @@ export default function AdminInquiries() {
       70
     );
     doc.text(`Status: ${STATUS_LABELS[inquiry.status]}`, 20, 80);
-    doc.text(`Date: ${format(new Date(inquiry.created_at), 'MMM d, yyyy')}`, 20, 90);
+    doc.text(
+      `Date: ${format(new Date(inquiry.created_at), 'MMM d, yyyy')}`,
+      20,
+      90
+    );
 
     doc.text('Message:', 20, 110);
     doc.text(inquiry.message || 'No message', 20, 120, { maxWidth: 170 });
@@ -95,22 +114,20 @@ export default function AdminInquiries() {
     <MainLayout>
       <div className="container py-8">
         <div className="mb-8">
-          <h1 className="font-display text-3xl font-bold text-foreground mb-2">
-            Customer Inquiries
-          </h1>
+          <h1 className="text-3xl font-bold mb-2">Customer Inquiries</h1>
           <p className="text-muted-foreground">
-            Manage and respond to customer inquiries. Confirm deals to auto-generate quotations.
+            Manage and update inquiry status from one dropdown.
           </p>
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-16">
+          <div className="flex justify-center py-16">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         ) : inquiries && inquiries.length > 0 ? (
           <div className="space-y-4">
 
-            {/* ===== DESKTOP TABLE ===== */}
+            {/* ===================== DESKTOP ===================== */}
             <div className="hidden lg:block border rounded-lg overflow-hidden">
               <Table>
                 <TableHeader>
@@ -123,15 +140,16 @@ export default function AdminInquiries() {
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
+
                 <TableBody>
                   {inquiries.map((inquiry) => (
                     <TableRow key={inquiry.id}>
                       <TableCell>
                         <p className="font-medium">{inquiry.customer_name}</p>
-                        <p className="text-sm text-muted-foreground flex items-center gap-1">
+                        <p className="text-sm flex items-center gap-1">
                           <Mail className="w-3 h-3" /> {inquiry.customer_email}
                         </p>
-                        <p className="text-sm text-muted-foreground flex items-center gap-1">
+                        <p className="text-sm flex items-center gap-1">
                           <Phone className="w-3 h-3" /> {inquiry.customer_phone}
                         </p>
                       </TableCell>
@@ -157,6 +175,7 @@ export default function AdminInquiries() {
                       <TableCell className="text-right">
                         <div className="flex flex-col gap-2 items-end">
 
+                          {/* ✅ SAME DROPDOWN WITH PRIORITY OPTION */}
                           <Select
                             value={inquiry.status}
                             onValueChange={(value: InquiryStatus) =>
@@ -167,11 +186,13 @@ export default function AdminInquiries() {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              {(Object.keys(STATUS_LABELS) as InquiryStatus[]).map((status) => (
-                                <SelectItem key={status} value={status}>
-                                  {STATUS_LABELS[status]}
-                                </SelectItem>
-                              ))}
+                              {(Object.keys(STATUS_LABELS) as InquiryStatus[]).map(
+                                (status) => (
+                                  <SelectItem key={status} value={status}>
+                                    {STATUS_LABELS[status]}
+                                  </SelectItem>
+                                )
+                              )}
                             </SelectContent>
                           </Select>
 
@@ -179,22 +200,14 @@ export default function AdminInquiries() {
                             inquiry.status !== 'cancelled' && (
                               <Button
                                 size="sm"
-                                onClick={() => handleConfirmDeal(inquiry.id)}
-                                disabled={generateQuotation.isPending}
                                 className="bg-success hover:bg-success/90"
+                                onClick={() => handleConfirmDeal(inquiry.id)}
                               >
-                                {generateQuotation.isPending ? (
-                                  <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                  <>
-                                    <CheckCircle className="w-4 h-4 mr-1" />
-                                    Confirm Deal
-                                  </>
-                                )}
+                                <CheckCircle className="w-4 h-4 mr-1" />
+                                Confirm Deal
                               </Button>
                             )}
 
-                          {/* ✅ DOWNLOAD PDF BUTTON */}
                           <Button
                             size="sm"
                             variant="outline"
@@ -203,7 +216,6 @@ export default function AdminInquiries() {
                             <FileText className="w-4 h-4 mr-1" />
                             Download PDF
                           </Button>
-
                         </div>
                       </TableCell>
                     </TableRow>
@@ -212,11 +224,11 @@ export default function AdminInquiries() {
               </Table>
             </div>
 
-            {/* ===== MOBILE CARDS ===== */}
+            {/* ===================== MOBILE ===================== */}
             <div className="lg:hidden space-y-4">
               {inquiries.map((inquiry) => (
                 <Card key={inquiry.id}>
-                  <CardHeader className="pb-3">
+                  <CardHeader>
                     <div className="flex justify-between">
                       <div>
                         <CardTitle>{inquiry.customer_name}</CardTitle>
@@ -230,23 +242,13 @@ export default function AdminInquiries() {
                     </div>
                   </CardHeader>
 
-                  <CardContent className="space-y-2">
+                  <CardContent className="space-y-3">
                     <div className="flex gap-2 text-sm">
                       <Mail className="w-4 h-4" /> {inquiry.customer_email}
                     </div>
                     <div className="flex gap-2 text-sm">
                       <Phone className="w-4 h-4" /> {inquiry.customer_phone}
                     </div>
-                    {inquiry.product && (
-                      <div className="flex gap-2 text-sm">
-                        <Package className="w-4 h-4" /> {inquiry.product.name}
-                      </div>
-                    )}
-                    {inquiry.message && (
-                      <div className="flex gap-2 text-sm">
-                        <MessageSquare className="w-4 h-4" /> {inquiry.message}
-                      </div>
-                    )}
 
                     <Select
                       value={inquiry.status}
@@ -258,34 +260,23 @@ export default function AdminInquiries() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {(Object.keys(STATUS_LABELS) as InquiryStatus[]).map((status) => (
-                          <SelectItem key={status} value={status}>
-                            {STATUS_LABELS[status]}
-                          </SelectItem>
-                        ))}
+                        {(Object.keys(STATUS_LABELS) as InquiryStatus[]).map(
+                          (status) => (
+                            <SelectItem key={status} value={status}>
+                              {STATUS_LABELS[status]}
+                            </SelectItem>
+                          )
+                        )}
                       </SelectContent>
                     </Select>
 
-                    {inquiry.status !== 'completed' &&
-                      inquiry.status !== 'cancelled' && (
-                        <Button
-                          className="w-full bg-success hover:bg-success/90"
-                          onClick={() => handleConfirmDeal(inquiry.id)}
-                        >
-                          Confirm Deal
-                        </Button>
-                      )}
-
-                    {/* ✅ DOWNLOAD PDF BUTTON */}
                     <Button
                       variant="outline"
-                      className="w-full"
                       onClick={() => handleDownloadPDF(inquiry)}
                     >
                       <FileText className="w-4 h-4 mr-2" />
-                      Download Inquiry PDF
+                      Download PDF
                     </Button>
-
                   </CardContent>
                 </Card>
               ))}
@@ -295,7 +286,7 @@ export default function AdminInquiries() {
           <div className="text-center py-16">
             <h2 className="text-xl font-semibold">No inquiries yet</h2>
             <p className="text-muted-foreground">
-              Customer inquiries will appear here when they contact you.
+              Customer inquiries will appear here.
             </p>
           </div>
         )}
