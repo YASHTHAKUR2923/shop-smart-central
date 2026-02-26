@@ -268,7 +268,7 @@ PARAS ENTERPRISES              </h2>
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground">Phone</h4>
-                    <p className="text-sm text-muted-foreground">+91 8766632609 </p>
+                    <p className="text-sm text-muted-foreground">+91 9922336222  </p>
                   </div>
                 </div>
 
@@ -278,7 +278,7 @@ PARAS ENTERPRISES              </h2>
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground">Email</h4>
-                    <p className="text-sm text-muted-foreground">shreyans.bhandari@parasenterprises.store</p>
+                    <p className="text-sm text-muted-foreground">info@parasenterprises.store</p>
                   </div>
                 </div>
               </div>
