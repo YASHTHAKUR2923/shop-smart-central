@@ -1,12 +1,11 @@
-import { useState } from 'react';
-import { ReactNode } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useState, ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from './AppSidebar';
 import { CartDrawer } from '@/components/cart/CartDrawer';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import { Phone, Search, User, ShoppingCart } from 'lucide-react';
+import { Phone, User, ShoppingCart } from 'lucide-react';
 import { useQuoteCart } from '@/contexts/QuoteCartContext';
 
 interface MainLayoutProps {
@@ -16,36 +15,41 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
   const { user, isAdmin } = useAuth();
   const { itemCount } = useQuoteCart();
-  const location = useLocation();
   const [cartOpen, setCartOpen] = useState(false);
 
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
+
         <main className="flex-1 flex flex-col">
+
+          {/* HEADER */}
           <header className="h-14 border-b border-border flex items-center px-4 bg-card sticky top-0 z-10">
+
+            {/* Sidebar Toggle */}
             <SidebarTrigger className="mr-4" />
 
-            {/* Logo/Brand - visible when sidebar is collapsed */}
-            <Link to="/" className="flex items-center gap-2 mr-4">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="font-display font-bold text-primary-foreground text-sm">PE</span>
-              </div>
-              <span className="font-display font-semibold text-foreground hidden sm:block">
-                Paras Enterprises
+            {/* 🔥 TEXT IN PLACE OF LOGO */}
+            <div className="font-display font-semibold tracking-widest text-sm whitespace-nowrap">
+              <span className="text-foreground">
+                DESIGN  OPTIMIZE 
+              </span>{' '}
+              <span className="text-accent">
+                EXECUTE  SCALE
               </span>
-            </Link>
+            </div>
 
             <div className="flex-1" />
 
-            {/* Header Actions */}
+            {/* HEADER ACTIONS */}
             <div className="flex items-center gap-2">
+
+              {/* Cart */}
               <Button
                 variant="ghost"
                 size="icon"
                 className="relative mr-1"
-                aria-label="Quote Cart"
                 onClick={() => setCartOpen(true)}
               >
                 <ShoppingCart className="w-5 h-5" />
@@ -56,6 +60,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                 )}
               </Button>
 
+              {/* Contact */}
               <Button variant="ghost" size="sm" asChild className="hidden sm:flex">
                 <Link to="/contact">
                   <Phone className="w-4 h-4 mr-2" />
@@ -63,6 +68,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                 </Link>
               </Button>
 
+              {/* Admin / User */}
               {user ? (
                 <div className="flex items-center gap-2">
                   {isAdmin && (
@@ -81,6 +87,8 @@ export function MainLayout({ children }: MainLayoutProps) {
               )}
             </div>
           </header>
+
+          {/* PAGE CONTENT */}
           <div className="flex-1">
             {children}
           </div>
