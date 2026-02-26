@@ -60,53 +60,31 @@ export default function Index() {
   return (
     <MainLayout>
       {/* Hero Section */}
-<section className="relative bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground overflow-hidden">
+      <section className="relative overflow-hidden text-white bg-[#0b0f14]">
 
-<div className="absolute inset-0 bg-[url('data:image/svg+xml,...')] opacity-60" />
-<div className="container relative py-20 lg:py-32">
+{/* Circuit Glow Layer */}
+<div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(0,140,255,0.15),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,120,0,0.12),transparent_40%)]" />
 
-  <div className="max-w-3xl animate-fade-in">
+{/* Grid Lines */}
+<div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:60px_60px]" />
 
-    {/* NEW HEADING */}
+<div className="relative container py-24 lg:py-32">
+
+  <div className="max-w-3xl">
+
     <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
       Enterprise IT Solutions <br />
-      <span className="text-accent">Built to Scale</span>
+      <span className="text-orange-500">Built to Scale</span>
     </h1>
 
-    {/* SUB TEXT */}
-    <p className="text-lg md:text-xl text-primary-foreground/80 mb-8 max-w-2xl">
+    <p className="text-lg md:text-xl text-white/70 mb-8 max-w-2xl">
       Delivering reliable IT hardware, services, and scalable technology solutions for modern businesses.
     </p>
 
-    {/* BUTTONS */}
-    <div className="flex flex-wrap gap-4">
-
-      <Button
-        asChild
-        size="lg"
-        className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold px-8"
-      >
-        <Link to="/contact" className="flex items-center">
-          Get a Quote
-          <ArrowRight className="ml-2 w-5 h-5" />
-        </Link>
-      </Button>
-
-      <Button
-        asChild
-        size="lg"
-        variant="outline"
-        className="border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground bg-transparent backdrop-blur-sm"
-      >
-        <Link to="/products/laptop/" className="flex items-center gap-2">
-          Explore Products
-        </Link>
-      </Button>
-
-    </div>
-
   </div>
+
 </div>
+
 </section>
       {/* Categories Section */}
       <section className="py-16 lg:py-24 bg-background">
