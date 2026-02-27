@@ -95,8 +95,8 @@ export default function Index() {
 
     {/* Moving Ticker Line */}
     <div className="overflow-hidden mb-4">
-        {/* <div className="w-max animate-marquee font-display text-3xl md:text-4xl font-bold text-white"></div> */}
-      <div className="w-max animate-marquee font-display text-3xl md:text-4xl font-bold text-white">
+      
+      <div className="inline-block  animate-marquee font-display text-3xl md:text-4xl font-bold text-white">
          🚀 Ready to Upgrade Your IT Infrastructure? • Enterprise Solutions Built to Scale • Contact Paras Enterprises Today •
 
       </div>
