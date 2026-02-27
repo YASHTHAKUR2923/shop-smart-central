@@ -97,8 +97,8 @@ export default function Index() {
     <div className="overflow-hidden mb-4">
       
       <div className="inline-block  animate-marquee font-display text-3xl md:text-4xl font-bold text-white">
-         🚀 Ready to Upgrade Your IT Infrastructure? • Enterprise Solutions Built to Scale • Contact Paras Enterprises Today •
-
+         <p>🚀 Ready to Upgrade Your IT Infrastructure? • Enterprise Solutions Built to Scale • Contact Paras Enterprises Today •
+</p>
       </div>
     </div>
 
