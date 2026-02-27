@@ -296,7 +296,7 @@ PARAS ENTERPRISES              </h2>
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-cent er justify-center shrink-0">
                     <Mail className="w-5 h-5 text-primary" />
                   </div>
                   <div>
@@ -313,7 +313,7 @@ PARAS ENTERPRISES              </h2>
                   <div className="w-24 h-24 mx-auto mb-4 rounded-2xl bg-primary flex items-center justify-center">
                     <span className="font-display font-bold text-primary-foreground text-4xl">PH</span>
                   </div>
-                  <p className="font-display text-2xl font-bold text-foreground">10+ Years</p>
+                  <p className="font-display text-2xl font-bold text-foreground">7+ Years</p>
                   <p className="text-muted-foreground">of Industry Experience</p>
                 </div>
               </div>
