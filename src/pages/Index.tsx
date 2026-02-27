@@ -89,17 +89,43 @@ export default function Index() {
 
 </div>
 {/* Moving CTA Banner */}
-<section className="py-6 overflow-hidden bg-transparent">
-  <div className="relative w-full overflow-hidden">
+{/* CTA Section */}
+<section className="py-16 lg:py-24 bg-transparent overflow-hidden">
+  <div className="container text-center">
 
-    <div className="marquee text-white">
-      <div className="marquee-content">
-        🚀 Ready to Upgrade Your IT Infrastructure? • Enterprise Solutions Built to Scale • Contact Paras Enterprises Today •
+    <div className="overflow-hidden mb-4">
+      <div className="inline-block whitespace-nowrap animate-marquee font-display text-3xl md:text-4xl font-bold text-white">
+        🚀 Ready to Upgrade Your IT Infrastructure? • 
+        Enterprise Solutions Built to Scale • 
+        Contact Paras Enterprises Today • 
       </div>
     </div>
 
+    <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
+      Get in touch with us today for competitive quotes and expert guidance on your IT hardware needs.
+    </p>
+
   </div>
 </section>
+  {/* CTA Section */}
+{/* <section className="py-16 lg:py-24 bg-primary text-primary-foreground">
+  <div className="container text-center">
+
+    <div className="overflow-hidden">
+      <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 inline-block whitespace-nowrap animate-marquee">
+        Ready to Upgrade Your IT Infrastructure?
+      </h2>
+    </div>
+
+    <p className="text-primary-foreground/80 text-lg mb-8 max-w-2xl mx-auto">
+      Get in touch with us today for competitive quotes and expert guidance on your IT hardware needs.
+    </p>
+
+  </div>
+</section> */}
+
+
+
 
 </section>
       {/* Categories Section */}
