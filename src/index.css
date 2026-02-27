@@ -127,7 +127,7 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-      zoom: 0.9;
+    
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -147,24 +147,28 @@
   }
 }
 
-
 .marquee {
-  width: 100%;
   overflow: hidden;
-  position: relative;
+  width: 100%;
 }
 
 .marquee-content {
-  display: inline-block;
-  white-space: nowrap;
+  display: flex;
+  width: max-content;
   animation: marquee 15s linear infinite;
+}
+
+.marquee-content span {
+  white-space: nowrap;
+  padding-right: 3rem;
+  font-weight: bold;
 }
 
 @keyframes marquee {
   from {
-    transform: translateX(100%);
+    transform: translateX(0);
   }
   to {
-    transform: translateX(-100%);
+    transform: translateX(-50%);
   }
 }
