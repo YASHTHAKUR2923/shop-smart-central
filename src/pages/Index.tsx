@@ -295,6 +295,8 @@ PARAS ENTERPRISES              </h2>
   </div>
 </section>
 
+
+
       {/* Footer */}
       <footer className="py-8 bg-foreground text-background/80">
         <div className="container">
