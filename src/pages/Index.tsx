@@ -93,17 +93,19 @@ export default function Index() {
 <section className="py-16 lg:py-24 bg-transparent overflow-hidden">
   <div className="container text-center">
 
+    {/* Moving Ticker Line */}
     <div className="overflow-hidden mb-4">
-      <div className="inline-block whitespace-nowrap animate-marquee font-display text-3xl md:text-4xl font-bold text-white">
+      <div className="inline-block  animate-marquee font-display text-3xl md:text-4xl font-bold text-white">
         🚀 Ready to Upgrade Your IT Infrastructure? • 
         Enterprise Solutions Built to Scale • 
         Contact Paras Enterprises Today • 
       </div>
     </div>
 
-    <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
+    {/* Same old paragraph */}
+    {/* <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
       Get in touch with us today for competitive quotes and expert guidance on your IT hardware needs.
-    </p>
+    </p> */}
 
   </div>
 </section>
