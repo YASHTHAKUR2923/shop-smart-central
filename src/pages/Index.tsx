@@ -279,26 +279,21 @@ PARAS ENTERPRISES              </h2>
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 lg:py-24 bg-primary text-primary-foreground">
-        <div className="container text-center">
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-            Ready to Upgrade Your IT Infrastructure?
-          </h2>
-          <p className="text-primary-foreground/80 text-lg mb-8 max-w-2xl mx-auto">
-            Get in touch with us today for competitive quotes and expert guidance on your IT hardware needs.
-          </p>
-          {/* <Button
-            asChild
-            size="lg"
-            className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold px-8"
-          >
-            <Link to="/contact">
-              Get a Quote
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Link>
-          </Button> */}
-        </div>
-      </section>
+<section className="py-16 lg:py-24 bg-primary text-primary-foreground">
+  <div className="container text-center">
+
+    <div className="overflow-hidden">
+      <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 inline-block whitespace-nowrap animate-marquee">
+        Ready to Upgrade Your IT Infrastructure?
+      </h2>
+    </div>
+
+    <p className="text-primary-foreground/80 text-lg mb-8 max-w-2xl mx-auto">
+      Get in touch with us today for competitive quotes and expert guidance on your IT hardware needs.
+    </p>
+
+  </div>
+</section>
 
       {/* Footer */}
       <footer className="py-8 bg-foreground text-background/80">
