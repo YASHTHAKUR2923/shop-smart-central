@@ -278,15 +278,21 @@ PARAS ENTERPRISES              </h2>
         </div>
       </section>
 
-      {/* Moving CTA Banner */}
-<section className="bg-primary text-primary-foreground py-6 overflow-hidden">
-  <div className="relative w-full overflow-hidden">
+      {/* CTA Section */}
+<section className="py-16 lg:py-24 bg-primary text-primary-foreground overflow-hidden">
+  <div className="container text-center">
 
-    <div className="marquee">
-      <div className="marquee-content">
-        🚀 Ready to Upgrade Your IT Infrastructure? • Enterprise Solutions Built to Scale • Contact Paras Hardwares Today •
-      </div>
+    {/* Moving Heading (same size as old) */}
+    <div className="relative w-full overflow-hidden mb-4">
+      <h2 className="font-display text-3xl md:text-4xl font-bold whitespace-nowrap animate-marquee">
+        🚀 Ready to Upgrade Your IT Infrastructure?
+      </h2>
     </div>
+
+    {/* SAME old paragraph */}
+    <p className="text-primary-foreground/80 text-lg mb-8 max-w-2xl mx-auto">
+      Get in touch with us today for competitive quotes and expert guidance on your IT hardware needs.
+    </p>
 
   </div>
 </section>
