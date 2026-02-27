@@ -59,6 +59,10 @@ export default function Index() {
 
   return (
     <MainLayout>
+
+
+      
+      
       {/* Hero Section */}
       <section className="relative overflow-hidden text-white bg-[#0b0f14]">
 
@@ -78,12 +82,24 @@ export default function Index() {
     </h1>
 
     <p className="text-lg md:text-xl text-white/70 mb-8 max-w-2xl">
-      Delivering reliable IT hardware, services, and scalable technology solutions for modern businesses.
+      Delivering Reliable  And IT Hardware Services, And Scalable Technology Available In All Scales AS Per Your Work Needs.
     </p>
 
   </div>
 
 </div>
+{/* Moving CTA Banner */}
+<section className="py-6 overflow-hidden bg-transparent">
+  <div className="relative w-full overflow-hidden">
+
+    <div className="marquee text-white">
+      <div className="marquee-content">
+        🚀 Ready to Upgrade Your IT Infrastructure? • Enterprise Solutions Built to Scale • Contact Paras Enterprises Today •
+      </div>
+    </div>
+
+  </div>
+</section>
 
 </section>
       {/* Categories Section */}
@@ -94,7 +110,7 @@ export default function Index() {
               Our Product Categories
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Browse through our extensive range of IT hardware solutions
+              Browse through our extensive range of IT Enterprises solutions
             </p>
           </div>
 
@@ -124,7 +140,7 @@ export default function Index() {
           </div>
         </div>
       </section>
-
+   
       {/* Services Section */}
       <section className="py-16 lg:py-24 bg-muted/50">
         <div className="container">
@@ -180,7 +196,7 @@ export default function Index() {
         <div className="container">
           <div className="text-center mb-12">
             <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Why Choose Paras Hardwares?
+              Why Choose Paras Enterprises?
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Integrity: We uphold transparency, ethics and accountability in all engagements.
@@ -279,7 +295,7 @@ PARAS ENTERPRISES              </h2>
       </section>
 
       {/* CTA Section */}
-<section className="py-16 lg:py-24 bg-primary text-primary-foreground">
+{/* <section className="py-16 lg:py-24 bg-primary text-primary-foreground">
   <div className="container text-center">
 
     <div className="overflow-hidden">
@@ -293,7 +309,7 @@ PARAS ENTERPRISES              </h2>
     </p>
 
   </div>
-</section>
+</section> */}
 
 
 
@@ -305,10 +321,10 @@ PARAS ENTERPRISES              </h2>
               <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
                 <span className="font-display font-bold text-accent-foreground text-lg">PH</span>
               </div>
-              <span className="font-display font-semibold">Paras Hardwares</span>
+              <span className="font-display font-semibold">Paras Enterprises</span>
             </div>
             <p className="text-sm text-background/60">
-              © {new Date().getFullYear()} Paras Hardwares. All rights reserved.
+              © {new Date().getFullYear()} Paras Enterprises. All rights reserved.
             </p>
           </div>
         </div>
