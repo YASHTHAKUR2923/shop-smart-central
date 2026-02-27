@@ -145,19 +145,3 @@
     animation-delay: 300ms;
   }
 }
-
-
-
-@keyframes marquee {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(-100%);
-  }
-}
-
-.animate-marquee {
-  display: inline-block;
-  animation: marquee 12s linear infinite;
-}
