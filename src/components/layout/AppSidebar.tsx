@@ -91,11 +91,15 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="border-r border-sidebar-border">
-      <SidebarHeader className="border-b border-sidebar-border">
-        <Link to="/" className="flex items-center justify-center">
-          <img src="/logo.png" alt="Paras Enterprises" className="h-auto w-48 object-contain" />
-        </Link>
-      </SidebarHeader>
+   <SidebarHeader className="border-b border-sidebar-border">
+  <Link to="/" className="flex items-center justify-center">
+    <img
+      src="/logo22.png"
+      alt="Paras Enterprises"
+      className="h-auto w-56 object-contain"
+    />
+  </Link>
+</SidebarHeader>
 
       <SidebarContent className="px-2">
         <SidebarGroup>
