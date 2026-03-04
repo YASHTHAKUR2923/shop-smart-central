@@ -50,7 +50,7 @@ const categoryData: { category: ProductCategory; icon: React.ElementType; descri
 const features = [
   { icon: Shield, title: 'Genuine Products', description: 'All products sourced from authorized distributors' },
   { icon: Truck, title: 'Fast Delivery', description: 'Quick delivery across India with proper packaging' },
-  { icon: HeadphonesIcon, title: '24/7 Technical Efficiency & Reliable Care', description: 'Round-the-clock technical support for all products' },
+  { icon: HeadphonesIcon, title: '24/7 Technical Efficiency ', description: 'Round-the-clock technical support for all products' },
   { icon: Award, title: 'Best Prices', description: 'Competitive pricing with bulk order discounts' },
 ];
 
@@ -183,56 +183,69 @@ export default function Index() {
 
   </div>
 </section>
-   
-      {/* Services Section */}
-      <section className="py-16 lg:py-24 bg-muted/50">
-        <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Our Services
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Explore our range of IT infrastructure and professional services
-            </p>
-          </div>
+   {/* Services Section */}
+<section className="py-16 lg:py-24 bg-muted/50">
+  <div className="container">
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-            {servicesLoading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton key={i} className="h-48 rounded-lg" />
-              ))
-            ) : (services ?? []).length > 0 ? (
-              (services ?? []).map((service, index) => (
-                <Link
-                  key={service.id}
-                  to={`/service/${service.id}`}
-                  className="group"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <Card className="h-full border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300 animate-fade-in">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
-                        <Wrench className="w-8 h-8 text-primary group-hover:text-primary-foreground transition-colors" />
-                      </div>
-                      <h3 className="font-display font-semibold text-foreground mb-2 group-hover:text-primary transition-colors capitalize">
-                        {service.name}
-                      </h3>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {service.description || 'Get in touch for details'}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-12 text-muted-foreground">
-                <Wrench className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>No services available yet. Add services in Admin to display them here.</p>
-              </div>
-            )}
-          </div>
+    <div className="text-center mb-12">
+      <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+        Our Services
+      </h2>
+
+      <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+        Explore our range of IT infrastructure and professional services
+      </p>
+    </div>
+
+    {/* Mobile Grid | Desktop Scroll */}
+    <div className="grid grid-cols-2 gap-4 lg:flex lg:gap-6 lg:overflow-x-auto lg:pb-6 lg:pr-24">
+
+      {servicesLoading ? (
+        Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-48 rounded-lg lg:w-[260px]" />
+        ))
+      ) : (services ?? []).length > 0 ? (
+        (services ?? []).map((service, index) => (
+          <Link
+            key={service.id}
+            to={`/service/${service.id}`}
+            className="group lg:flex-shrink-0 lg:w-[260px]"
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
+
+            <Card className="h-full border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300 animate-fade-in">
+
+              <CardContent className="p-6 text-center">
+
+                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
+                  <Wrench className="w-8 h-8 text-primary group-hover:text-primary-foreground transition-colors" />
+                </div>
+
+                <h3 className="font-display font-semibold text-foreground mb-2 group-hover:text-primary transition-colors capitalize">
+                  {service.name}
+                </h3>
+
+                <p className="text-sm text-muted-foreground line-clamp-2">
+                  {service.description || "Get in touch for details"}
+                </p>
+
+              </CardContent>
+
+            </Card>
+
+          </Link>
+        ))
+      ) : (
+        <div className="col-span-full text-center py-12 text-muted-foreground">
+          <Wrench className="w-12 h-12 mx-auto mb-4 opacity-50" />
+          <p>No services available yet. Add services in Admin to display them here.</p>
         </div>
-      </section>
+      )}
+
+    </div>
+
+  </div>
+</section>
 
       {/* Features Section */}
       <section className="py-16 lg:py-24 bg-background">
