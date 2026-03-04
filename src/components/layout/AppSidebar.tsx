@@ -92,11 +92,11 @@ export function AppSidebar() {
  return (
   <Sidebar className="border-r border-sidebar-border bg-[#0b0f14] ">
 
-    {/* Glow Background */}
-    <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(0,140,255,0.15),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,120,0,0.12),transparent_40%)]" />
+   {/* Glow Background */}
+<div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(0,140,255,0.15),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(255,120,0,0.12),transparent_40%)]" />
 
-    {/* Grid Squares */}
-    <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:60px_60px]" />
+{/* Grid Lines */}
+<div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:60px_60px]" />
 
     <SidebarHeader className="border-b border-sidebar-border relative z-10">
       <Link to="/" className="flex items-center justify-center">
