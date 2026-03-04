@@ -145,14 +145,14 @@ export default function Index() {
       </p>
     </div>
 
-    {/* Horizontal Scroll */}
-    <div className="flex gap-6 overflow-x-auto pb-6 pr-24">
+    {/* Mobile Grid | Desktop Scroll */}
+    <div className="grid grid-cols-2 gap-4 lg:flex lg:gap-6 lg:overflow-x-auto lg:pb-6 lg:pr-24">
 
       {categoryData.map(({ category, icon: Icon, description }, index) => (
         <Link
           key={category}
           to={`/products/${category}/dell`}
-          className="group flex-shrink-0 w-[260px]"
+          className="group lg:flex-shrink-0 lg:w-[260px]"
           style={{ animationDelay: `${index * 100}ms` }}
         >
 
