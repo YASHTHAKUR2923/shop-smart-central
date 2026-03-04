@@ -135,7 +135,7 @@ export default function Index() {
 <section className="py-16 lg:py-24 bg-background">
   <div className="container">
 
-    <div className="text-center mb-12 max-w-3xl ml-60">
+    <div className="text-center mb-12 ">
       <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
         Our Product Categories
       </h2>
@@ -187,7 +187,7 @@ export default function Index() {
 <section className="py-16 lg:py-24 bg-muted/50">
   <div className="container">
 
-    <div className="text-center  mb-12 max-w-3xl ml-60">
+    <div className="text-center  mb-12 ">
       <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
         Our Services
       </h2>
@@ -251,7 +251,7 @@ export default function Index() {
 <section className="py-16 lg:py-24 bg-background">
   <div className="container mx-auto px-4">
 
-    <div className="text-center mb-12 max-w-3xl ml-60">
+    <div className="text-center mb-12 ">
       <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
         Why Choose Paras Enterprises?
       </h2>
