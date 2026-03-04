@@ -50,7 +50,7 @@ const categoryData: { category: ProductCategory; icon: React.ElementType; descri
 const features = [
   { icon: Shield, title: 'Genuine Products', description: 'All products sourced from authorized distributors' },
   { icon: Truck, title: 'Fast Delivery', description: 'Quick delivery across India with proper packaging' },
-  { icon: HeadphonesIcon, title: '24/7 Technical Care', description: 'Round-the-clock technical support for all products' },
+  { icon: HeadphonesIcon, title: '24/7 Technical Efficiency & Reliable Care', description: 'Round-the-clock technical support for all products' },
   { icon: Award, title: 'Best Prices', description: 'Competitive pricing with bulk order discounts' },
 ];
 
@@ -130,44 +130,59 @@ export default function Index() {
 
 
 </section>
-      {/* Categories Section */}
-      <section className="py-16 lg:py-24 bg-background">
-        <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Our Product Categories
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Browse through our extensive range of IT Enterprises solutions
-            </p>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-            {categoryData.map(({ category, icon: Icon, description }, index) => (
-              <Link
-                key={category}
-                to={`/products/${category}/dell`}
-                className="group"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <Card className="h-full border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300 animate-fade-in">
-                  <CardContent className="p-6 text-center">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
-                      <Icon className="w-8 h-8 text-primary group-hover:text-primary-foreground transition-colors" />
-                    </div>
-                    <h3 className="font-display font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                      {CATEGORY_LABELS[category]}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+{/* Categories Section */}
+<section className="py-16 lg:py-24 bg-background">
+  <div className="container">
+
+    <div className="text-center mb-12">
+      <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+        Our Product Categories
+      </h2>
+
+      <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+        Browse through our extensive range of IT Enterprises solutions
+      </p>
+    </div>
+
+    {/* Horizontal Scroll */}
+    <div className="flex gap-6 overflow-x-auto pb-6 pr-24">
+
+      {categoryData.map(({ category, icon: Icon, description }, index) => (
+        <Link
+          key={category}
+          to={`/products/${category}/dell`}
+          className="group flex-shrink-0 w-[260px]"
+          style={{ animationDelay: `${index * 100}ms` }}
+        >
+
+          <Card className="h-full border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300 animate-fade-in">
+
+            <CardContent className="p-6 text-center">
+
+              <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
+                <Icon className="w-8 h-8 text-primary group-hover:text-primary-foreground transition-colors" />
+              </div>
+
+              <h3 className="font-display font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                {CATEGORY_LABELS[category]}
+              </h3>
+
+              <p className="text-sm text-muted-foreground">
+                {description}
+              </p>
+
+            </CardContent>
+
+          </Card>
+
+        </Link>
+      ))}
+
+    </div>
+
+  </div>
+</section>
    
       {/* Services Section */}
       <section className="py-16 lg:py-24 bg-muted/50">

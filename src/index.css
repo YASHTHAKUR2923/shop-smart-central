@@ -158,3 +158,35 @@
 .animate-marquee {
   animation: marquee 10s linear infinite;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+body {
+  overflow-x: hidden;
+}
+
+/* hide scroll bar but keep scrolling */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
