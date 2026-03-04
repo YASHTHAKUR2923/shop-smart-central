@@ -62,19 +62,19 @@ export default function Contact() {
     {
       icon: Phone,
       title: 'Phone',
-      content: '+91 98765 43210',
+      content: '+91 9922336222',
       description: 'Call us during business hours',
     },
     {
       icon: Mail,
       title: 'Email',
-      content: 'parashardwares.com',
+      content: 'info@parasenterprises.store',
       description: 'We reply within 24 hours',
     },
     {
       icon: MapPin,
       title: 'Address',
-      content: 'Mumbai, Maharashtra, India',
+      content: 'SH NO B8 BUILDING C, SWAMIPURAM 2161/B, NEAR S P M SCHOOL, SADASHIV PETH, Pune, Maharashtra, 411030',
       description: 'Visit our showroom',
     },
     {

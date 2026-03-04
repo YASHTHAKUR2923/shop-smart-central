@@ -82,18 +82,17 @@ export default function Index() {
     </h1>
 
     <p className="text-lg md:text-xl text-white/70 mb-8 max-w-2xl">
-      Delivering Reliable  And IT Hardware Services, And Scalable Technology Available In All Scales AS Per Your Work Needs.
-    </p>
+Delivering reliable & assured - IT Hardware Products, IT Services & Solutions as per your work needs.    </p>
 
   </div>
 
 </div>
 {/* Moving CTA Banner */}
-{/* CTA Section */}
-<section className="py-16 lg:py-1 bg-transparent overflow-hidden">
+
+{/* <section className="py-16 lg:py-1 bg-transparent overflow-hidden">
   <div className="container text-center">
 
-    {/* Moving Ticker Line */}
+   
     <div className="overflow-hidden mb-4">
       
       <div className="inline-block  animate-marquee font-display text-3xl md:text-4xl font-bold text-white">
@@ -102,29 +101,10 @@ export default function Index() {
       </div>
     </div>
 
-    {/* Same old paragraph */}
-    {/* <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-      Get in touch with us today for competitive quotes and expert guidance on your IT hardware needs.
-    </p> */}
-
-  </div>
-</section>
-  {/* CTA Section */}
-{/* <section className="py-16 lg:py-24 bg-primary text-primary-foreground">
-  <div className="container text-center">
-
-    <div className="overflow-hidden">
-      <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 inline-block whitespace-nowrap animate-marquee">
-        Ready to Upgrade Your IT Infrastructure?
-      </h2>
-    </div>
-
-    <p className="text-primary-foreground/80 text-lg mb-8 max-w-2xl mx-auto">
-      Get in touch with us today for competitive quotes and expert guidance on your IT hardware needs.
-    </p>
 
   </div>
 </section> */}
+
 
 
 
