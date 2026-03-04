@@ -135,7 +135,7 @@ export default function Index() {
 <section className="py-16 lg:py-24 bg-background">
   <div className="container">
 
-    <div className="text-center mb-12">
+    <div className="text-center mb-12 max-w-3xl ml-60">
       <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
         Our Product Categories
       </h2>
@@ -187,7 +187,7 @@ export default function Index() {
 <section className="py-16 lg:py-24 bg-muted/50">
   <div className="container">
 
-    <div className="text-center mb-12">
+    <div className="text-center  mb-12 max-w-3xl ml-60">
       <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
         Our Services
       </h2>
@@ -247,35 +247,49 @@ export default function Index() {
   </div>
 </section>
 
-      {/* Features Section */}
-      <section className="py-16 lg:py-24 bg-background">
-        <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Why Choose Paras Enterprises?
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Integrity: We uphold transparency, ethics and accountability in all engagements.
-            </p>
+     {/* Features Section */}
+<section className="py-16 lg:py-24 bg-background">
+  <div className="container mx-auto px-4">
+
+    <div className="text-center mb-12 max-w-3xl ml-60">
+      <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+        Why Choose Paras Enterprises?
+      </h2>
+
+      <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+        Integrity: We uphold transparency, ethics and accountability in all engagements.
+      </p>
+    </div>
+
+    {/* Shifted Left */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl ml-6">
+
+      {features.map(({ icon: Icon, title, description }, index) => (
+        <div
+          key={title}
+          className="text-center animate-fade-in"
+          style={{ animationDelay: `${index * 100}ms` }}
+        >
+
+          <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-accent/10 flex items-center justify-center">
+            <Icon className="w-7 h-7 text-accent" />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map(({ icon: Icon, title, description }, index) => (
-              <div
-                key={title}
-                className="text-center animate-fade-in"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-accent/10 flex items-center justify-center">
-                  <Icon className="w-7 h-7 text-accent" />
-                </div>
-                <h3 className="font-display font-semibold text-foreground mb-2">{title}</h3>
-                <p className="text-sm text-muted-foreground">{description}</p>
-              </div>
-            ))}
-          </div>
+          <h3 className="font-display font-semibold text-foreground mb-2">
+            {title}
+          </h3>
+
+          <p className="text-sm text-muted-foreground">
+            {description}
+          </p>
+
         </div>
-      </section>
+      ))}
+
+    </div>
+
+  </div>
+</section>
       {/* <div className="flex justify-center">
 
 </div> */}
@@ -335,14 +349,24 @@ PARAS ENTERPRISES              </h2>
               </div>
             </div>
 
-            <div className="relative animate-fade-in">
-              <div className="aspect-video rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                <div className="text-center p-8">
-                  <div className="w-24 h-24 mx-auto mb-4 rounded-2xl bg-primary flex items-center justify-center">
-                    <span className="font-display font-bold text-primary-foreground text-4xl">PH</span>
-                  </div>
-                  <p className="font-display text-2xl font-bold text-foreground">7+ Years</p>
-                  <p className="text-muted-foreground">of Industry Experience</p>
+          <div className="relative animate-fade-in flex lg:justify-start justify-center">
+  <div className="rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center px-14 py-12 max-w-lg w-full lg:ml-4">
+
+    <div className="text-center">
+
+      <div className="w-24 h-24 mx-auto mb-5 rounded-xl bg-primary flex items-center justify-center">
+        <span className="font-display font-bold text-primary-foreground text-4xl">
+          PH
+        </span>
+      </div>
+
+      <p className="font-display text-3xl font-bold text-foreground">
+        7+ Years
+      </p>
+
+      <p className="text-muted-foreground text-base">
+        of Industry Experience
+      </p>
                 </div>
               </div>
             </div>
@@ -379,7 +403,7 @@ PARAS ENTERPRISES              </h2>
               </div>
               <span className="font-display font-semibold">Paras Enterprises</span>
             </div>
-            <p className="text-sm text-background/60">
+            <p className="text-sm text-background/60 ">
               © {new Date().getFullYear()} Paras Enterprises. All rights reserved.
             </p>
           </div>
