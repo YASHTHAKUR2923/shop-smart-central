@@ -391,15 +391,14 @@ PARAS ENTERPRISES              </h2>
   </div>
 </section> */}
 
-
 {/* Footer */}
 <footer className="py-8 bg-foreground text-background/80">
-  <div className="container mx-auto px-6 relative">
+  <div className="container mx-auto px-6">
 
-    <div className="flex items-center">
-      
-      {/* Left Logo */}
-      <div className="flex items-center gap-3">
+    <div className="relative flex flex-col md:flex-row items-center md:items-center md:justify-start gap-4">
+
+      {/* Logo */}
+      <div className="flex items-center gap-3 md:mr-auto">
         <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
           <span className="font-display font-bold text-accent-foreground text-lg">
             PH
@@ -411,8 +410,8 @@ PARAS ENTERPRISES              </h2>
         </span>
       </div>
 
-      {/* Center Copyright */}
-      <p className="absolute left-1/2 -translate-x-1/2 text-sm text-background/60">
+      {/* Copyright */}
+      <p className="text-sm text-background/60 text-center md:absolute md:left-1/2 md:-translate-x-1/2">
         © {new Date().getFullYear()} Paras Enterprises. All rights reserved.
       </p>
 
