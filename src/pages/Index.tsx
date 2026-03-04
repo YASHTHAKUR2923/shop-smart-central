@@ -392,23 +392,34 @@ PARAS ENTERPRISES              </h2>
 </section> */}
 
 
+{/* Footer */}
+<footer className="py-8 bg-foreground text-background/80">
+  <div className="container mx-auto px-6 relative">
 
-      {/* Footer */}
-      <footer className="py-8 bg-foreground text-background/80">
-        <div className="container">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
-                <span className="font-display font-bold text-accent-foreground text-lg">PH</span>
-              </div>
-              <span className="font-display font-semibold">Paras Enterprises</span>
-            </div>
-            <p className="text-sm text-background/60 ">
-              © {new Date().getFullYear()} Paras Enterprises. All rights reserved.
-            </p>
-          </div>
+    <div className="flex items-center">
+      
+      {/* Left Logo */}
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
+          <span className="font-display font-bold text-accent-foreground text-lg">
+            PH
+          </span>
         </div>
-      </footer>
+
+        <span className="font-display font-semibold">
+          Paras Enterprises
+        </span>
+      </div>
+
+      {/* Center Copyright */}
+      <p className="absolute left-1/2 -translate-x-1/2 text-sm text-background/60">
+        © {new Date().getFullYear()} Paras Enterprises. All rights reserved.
+      </p>
+
+    </div>
+
+  </div>
+</footer>
     </MainLayout>
   );
 }
