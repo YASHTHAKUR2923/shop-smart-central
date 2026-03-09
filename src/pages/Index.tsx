@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useRef, useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Skeleton } from '@/components/ui/skeleton';
 import { MainLayout } from '@/components/layout/MainLayout';
 import {
@@ -56,6 +58,127 @@ const features = [
 
 export default function Index() {
   const { data: services, isLoading: servicesLoading } = useServicesByCategory();
+  const categoryScrollRef = useRef<HTMLDivElement>(null);
+  const servicesScrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollCategoryLeft, setCanScrollCategoryLeft] = useState(false);
+  const [canScrollCategoryRight, setCanScrollCategoryRight] = useState(true);
+  const [canScrollServicesLeft, setCanScrollServicesLeft] = useState(false);
+  const [canScrollServicesRight, setCanScrollServicesRight] = useState(true);
+
+  useEffect(() => {
+    // Initial check after component mounts
+    const timer = setTimeout(() => {
+      checkCategoryScroll();
+      checkServicesScroll();
+    }, 100);
+
+    const categoryRef = categoryScrollRef.current;
+    const servicesRef = servicesScrollRef.current;
+
+    if (categoryRef) {
+      categoryRef.addEventListener('scroll', checkCategoryScroll);
+    }
+    if (servicesRef) {
+      servicesRef.addEventListener('scroll', checkServicesScroll);
+    }
+
+    window.addEventListener('resize', () => {
+      checkCategoryScroll();
+      checkServicesScroll();
+    });
+
+    return () => {
+      clearTimeout(timer);
+      if (categoryRef) {
+        categoryRef.removeEventListener('scroll', checkCategoryScroll);
+      }
+      if (servicesRef) {
+        servicesRef.removeEventListener('scroll', checkServicesScroll);
+      }
+      window.removeEventListener('resize', () => {
+        checkCategoryScroll();
+        checkServicesScroll();
+      });
+    };
+  }, [services]);
+
+  const checkCategoryScroll = () => {
+    if (categoryScrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = categoryScrollRef.current;
+      setCanScrollCategoryLeft(scrollLeft > 10);
+      setCanScrollCategoryRight(scrollLeft < scrollWidth - clientWidth - 10);
+    } else {
+      setCanScrollCategoryLeft(false);
+      setCanScrollCategoryRight(false);
+    }
+  };
+
+  const checkServicesScroll = () => {
+    if (servicesScrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = servicesScrollRef.current;
+      setCanScrollServicesLeft(scrollLeft > 10);
+      setCanScrollServicesRight(scrollLeft < scrollWidth - clientWidth - 10);
+    } else {
+      setCanScrollServicesLeft(false);
+      setCanScrollServicesRight(false);
+    }
+  };
+
+  const scrollCategory = (direction: 'left' | 'right') => {
+    if (!categoryScrollRef.current) return;
+
+    const element = categoryScrollRef.current;
+    const scrollAmount = 280;
+    const currentScroll = element.scrollLeft;
+    const maxScroll = element.scrollWidth - element.clientWidth;
+
+    // Don't scroll if there's nothing to scroll
+    if (maxScroll <= 0) return;
+
+    let newScroll;
+    if (direction === 'left') {
+      newScroll = Math.max(0, currentScroll - scrollAmount);
+    } else {
+      newScroll = Math.min(maxScroll, currentScroll + scrollAmount);
+    }
+
+    element.scrollTo({
+      left: newScroll,
+      behavior: 'smooth'
+    });
+
+    setTimeout(() => {
+      checkCategoryScroll();
+    }, 600);
+  };
+
+  const scrollServices = (direction: 'left' | 'right') => {
+    if (!servicesScrollRef.current) return;
+
+    const element = servicesScrollRef.current;
+    const scrollAmount = 280;
+    const currentScroll = element.scrollLeft;
+    const maxScroll = element.scrollWidth - element.clientWidth;
+
+    // Don't scroll if there's nothing to scroll
+    if (maxScroll <= 0) return;
+
+    let newScroll;
+    if (direction === 'left') {
+      newScroll = Math.max(0, currentScroll - scrollAmount);
+    } else {
+      newScroll = Math.min(maxScroll, currentScroll + scrollAmount);
+    }
+
+    element.scrollTo({
+      left: newScroll,
+      behavior: 'smooth'
+    });
+
+    setTimeout(() => {
+      checkServicesScroll();
+    }, 600);
+  };
 
   return (
     <MainLayout>
@@ -126,39 +249,56 @@ Delivering reliable & assured - IT Hardware Products, IT Services & Solutions as
     </div>
 
     {/* Mobile Grid | Desktop Scroll */}
-    <div className="grid grid-cols-2 gap-4 lg:flex lg:gap-6 lg:overflow-x-auto lg:pb-6 lg:pr-24">
+    <div className="flex items-center gap-4 lg:gap-4">
+      {/* Left Button */}
+      <button
+        onClick={() => scrollCategory('left')}
+        disabled={!canScrollCategoryLeft}
+        className="hidden lg:flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-shrink-0 shadow-md hover:shadow-lg"
+      >
+        <ChevronLeft className="w-5 h-5" />
+      </button>
 
-      {categoryData.map(({ category, icon: Icon, description }, index) => (
-        <Link
-          key={category}
-          to={`/products/${category}/dell`}
-          className="group lg:flex-shrink-0 lg:w-[260px]"
-          style={{ animationDelay: `${index * 100}ms` }}
+      {/* Scroll Container */}
+      <div className="relative flex-1 overflow-hidden">
+        <div 
+          ref={categoryScrollRef}
+          className="grid grid-cols-2 gap-4 lg:flex lg:gap-6 lg:scroll-smooth lg:overflow-x-auto scrollbar-hide"
+          style={{ scrollBehavior: 'smooth' }}
         >
+          {categoryData.map(({ category, icon: Icon, description }, index) => (
+            <Link
+              key={category}
+              to={`/products/${category}/dell`}
+              className="group lg:flex-shrink-0 lg:w-[260px]"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <Card className="h-full border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300 animate-fade-in">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
+                    <Icon className="w-8 h-8 text-primary group-hover:text-primary-foreground transition-colors" />
+                  </div>
+                  <h3 className="font-display font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                    {CATEGORY_LABELS[category]}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {description}
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </div>
 
-          <Card className="h-full border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300 animate-fade-in">
-
-            <CardContent className="p-6 text-center">
-
-              <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
-                <Icon className="w-8 h-8 text-primary group-hover:text-primary-foreground transition-colors" />
-              </div>
-
-              <h3 className="font-display font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                {CATEGORY_LABELS[category]}
-              </h3>
-
-              <p className="text-sm text-muted-foreground">
-                {description}
-              </p>
-
-            </CardContent>
-
-          </Card>
-
-        </Link>
-      ))}
-
+      {/* Right Button */}
+      <button
+        onClick={() => scrollCategory('right')}
+        disabled={!canScrollCategoryRight}
+        className="hidden lg:flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-shrink-0 shadow-md hover:shadow-lg"
+      >
+        <ChevronRight className="w-5 h-5" />
+      </button>
     </div>
 
   </div>
@@ -178,50 +318,67 @@ Delivering reliable & assured - IT Hardware Products, IT Services & Solutions as
     </div>
 
     {/* Mobile Grid | Desktop Scroll */}
-    <div className="grid grid-cols-2 gap-4 lg:flex lg:gap-6 lg:overflow-x-auto lg:pb-6 lg:pr-24">
+    <div className="flex items-center gap-4 lg:gap-4">
+      {/* Left Button */}
+      <button
+        onClick={() => scrollServices('left')}
+        disabled={!canScrollServicesLeft}
+        className="hidden lg:flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-shrink-0 shadow-md hover:shadow-lg"
+      >
+        <ChevronLeft className="w-5 h-5" />
+      </button>
 
-      {servicesLoading ? (
-        Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-48 rounded-lg lg:w-[260px]" />
-        ))
-      ) : (services ?? []).length > 0 ? (
-        (services ?? []).map((service, index) => (
-          <Link
-            key={service.id}
-            to={`/service/${service.id}`}
-            className="group lg:flex-shrink-0 lg:w-[260px]"
-            style={{ animationDelay: `${index * 100}ms` }}
-          >
-
-            <Card className="h-full border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300 animate-fade-in">
-
-              <CardContent className="p-6 text-center">
-
-                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
-                  <Wrench className="w-8 h-8 text-primary group-hover:text-primary-foreground transition-colors" />
-                </div>
-
-                <h3 className="font-display font-semibold text-foreground mb-2 group-hover:text-primary transition-colors capitalize">
-                  {service.name}
-                </h3>
-
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                  {service.description || "Get in touch for details"}
-                </p>
-
-              </CardContent>
-
-            </Card>
-
-          </Link>
-        ))
-      ) : (
-        <div className="col-span-full text-center py-12 text-muted-foreground">
-          <Wrench className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p>No services available yet. Add services in Admin to display them here.</p>
+      {/* Scroll Container */}
+      <div className="relative flex-1 overflow-hidden">
+        <div 
+          ref={servicesScrollRef}
+          className="grid grid-cols-2 gap-4 lg:flex lg:gap-6 lg:scroll-smooth lg:overflow-x-auto scrollbar-hide"
+          style={{ scrollBehavior: 'smooth' }}
+        >
+          {servicesLoading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-48 rounded-lg lg:w-[260px]" />
+            ))
+          ) : (services ?? []).length > 0 ? (
+            (services ?? []).map((service, index) => (
+              <Link
+                key={service.id}
+                to={`/service/${service.id}`}
+                className="group lg:flex-shrink-0 lg:w-[260px]"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <Card className="h-full border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300 animate-fade-in">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
+                      <Wrench className="w-8 h-8 text-primary group-hover:text-primary-foreground transition-colors" />
+                    </div>
+                    <h3 className="font-display font-semibold text-foreground mb-2 group-hover:text-primary transition-colors capitalize">
+                      {service.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {service.description || "Get in touch for details"}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12 text-muted-foreground">
+              <Wrench className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p>No services available yet. Add services in Admin to display them here.</p>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
+      {/* Right Button */}
+      <button
+        onClick={() => scrollServices('right')}
+        disabled={!canScrollServicesRight}
+        className="hidden lg:flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-shrink-0 shadow-md hover:shadow-lg"
+      >
+        <ChevronRight className="w-5 h-5" />
+      </button>
     </div>
 
   </div>

@@ -4,6 +4,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide scrollbars for custom scroll containers */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
 /* ===== Premium Dark Tech Design System ===== */
 
 @layer base {
@@ -190,4 +200,32 @@ body {
 .scrollbar-hide {
   scrollbar-width: none;
   -ms-overflow-style: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
